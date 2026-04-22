@@ -1,4 +1,4 @@
-const INBOX_DOMAIN = process.env.INBOX_DOMAIN || "box.qiassychecksheet.online";
+const INBOX_DOMAIN = process.env.INBOX_DOMAIN || "mail.example.com";
 
 function randomPart(length = 6) {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
