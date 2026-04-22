@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# private-temp-mail
 
-## Getting Started
+Private/internal temp mail + OTP inbox tool.
 
-First, run the development server:
+## Stack
+- Next.js
+- TypeScript
+- Tailwind CSS
+- SQLite
+- Drizzle ORM
+- JWT inbox access
+
+## Current features
+- Generate inbox
+- JWT inbox link
+- Inbox detail page
+- Inbound email endpoint
+- OTP extraction
+- Refresh inbox
+- Copy OTP
+- 30-day cleanup script
+
+## Environment
+Copy `.env.example` to `.env.local`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Variables:
+- `JWT_SECRET` = secret untuk sign/verify inbox JWT
+- `INBOX_DOMAIN` = domain email inbox, mis. `box.qiassychecksheet.online`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local setup
+```bash
+npm install
+npm run db:push
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Default local app:
+- `http://127.0.0.1:3000`
 
-## Learn More
+## Important routes
+- `/` → generate inbox
+- `/inbox?jwt=...` → lihat inbox by JWT
+- `POST /api/inboxes/create` → buat inbox
+- `POST /api/inbound` → terima email masuk
 
-To learn more about Next.js, take a look at the following resources:
+## Cleanup retention
+Manual:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run cleanup
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Production deploy templates
+Files provided in `deploy/`:
+- `deploy/private-temp-mail.service`
+- `deploy/nginx-box.qiassychecksheet.online.conf`
+- `deploy/private-temp-mail-cleanup.service`
+- `deploy/private-temp-mail-cleanup.timer`
 
-## Deploy on Vercel
+### App service install
+```bash
+cp .env.production.example .env.production
+npm install
+npm run db:push
+npm run build
+sudo cp deploy/private-temp-mail.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now private-temp-mail
+sudo systemctl status private-temp-mail
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Nginx install
+```bash
+sudo cp deploy/nginx-box.qiassychecksheet.online.conf /etc/nginx/sites-available/private-temp-mail
+sudo ln -s /etc/nginx/sites-available/private-temp-mail /etc/nginx/sites-enabled/private-temp-mail
+sudo nginx -t
+sudo systemctl reload nginx
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Cleanup timer install
+```bash
+sudo cp deploy/private-temp-mail-cleanup.service /etc/systemd/system/
+sudo cp deploy/private-temp-mail-cleanup.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now private-temp-mail-cleanup.timer
+sudo systemctl list-timers | grep private-temp-mail-cleanup
+```
+
+### SMTP receiver notes
+Basic SMTP receiver prep is included:
+- `deploy/private-temp-mail-smtp.service`
+- `scripts/haraka-forwarder.js`
+- `haraka/README-SMTP.md`
+
+This part still needs final server-side wiring for Haraka config + port 25 exposure.
+
+## Notes
+- Inbox retention target: 30 hari
+- Tool ini dipisah dari `daily-checksheet-qa`
+- Planned deployment subdomain: `box.qiassychecksheet.online`
+- After nginx is live, issue HTTPS cert for `box.qiassychecksheet.online`

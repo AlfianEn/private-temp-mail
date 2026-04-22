@@ -1,0 +1,8 @@
+[Unit]
+Description=Private Temp Mail cleanup job
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/.openclaw/workspace/private-temp-mail
+ExecStart=/usr/bin/npm run cleanup

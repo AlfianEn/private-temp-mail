@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Private Temp Mail cleanup daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+Unit=private-temp-mail-cleanup.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Private Temp Mail SMTP receiver (Haraka)
+After=network.target private-temp-mail.service
+
+[Service]
+Type=simple
+WorkingDirectory=/root/.openclaw/workspace/private-temp-mail
+ExecStart=/root/.openclaw/workspace/private-temp-mail/node_modules/.bin/haraka -c /root/.openclaw/workspace/private-temp-mail/haraka
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
