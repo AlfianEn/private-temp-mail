@@ -32,3 +32,21 @@ body {
   background: rgba(34, 211, 238, 0.35);
   color: #f8fafc;
 }
+
+.email-html-preview {
+  line-height: 1.5;
+}
+
+.email-html-preview img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.email-html-preview table {
+  max-width: 100%;
+}
+
+.email-html-preview a {
+  color: #2563eb;
+}

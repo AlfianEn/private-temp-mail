@@ -20,6 +20,22 @@ function normalizePlainText(value: string) {
   return normalizedLines || "(Email body kosong)";
 }
 
+function sanitizeHtml(value: string) {
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<head[\s\S]*?<\/head>/gi, "")
+    .replace(/\son\w+=("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/\sstyle=("[^"]*"|'[^']*')/gi, "")
+    .replace(/\ssrc=("cid:[^"]*"|'cid:[^']*')/gi, "")
+    .replace(/<meta[^>]*>/gi, "")
+    .replace(/<link[^>]*>/gi, "")
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
+    .replace(/<object[\s\S]*?<\/object>/gi, "")
+    .replace(/<embed[\s\S]*?<\/embed>/gi, "")
+    .replace(/<form[\s\S]*?<\/form>/gi, "");
+}
+
 export function extractDisplayImageUrls(htmlBody?: string | null) {
   const html = htmlBody?.trim() || "";
   if (!html) return [];
@@ -29,6 +45,14 @@ export function extractDisplayImageUrls(htmlBody?: string | null) {
     .filter((value): value is string => Boolean(value) && /^https?:\/\//i.test(value));
 
   return [...new Set(matches)].slice(0, 6);
+}
+
+export function getDisplayEmailHtml(htmlBody?: string | null) {
+  const html = htmlBody?.trim() || "";
+  if (!html) return null;
+
+  const sanitized = sanitizeHtml(html);
+  return sanitized.trim() || null;
 }
 
 export function getDisplayEmailBody(textBody?: string | null, htmlBody?: string | null) {
