@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
 import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
+import { formatDateTime } from "@/lib/date";
 
 type InboxPageProps = {
   searchParams: Promise<{ jwt?: string }>;
@@ -72,11 +73,11 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Created at</p>
-              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{inbox.createdAt}</p>
+              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatDateTime(inbox.createdAt)}</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Expires at</p>
-              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{inbox.expiresAt || "—"}</p>
+              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatDateTime(inbox.expiresAt)}</p>
             </div>
           </div>
 
@@ -104,7 +105,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                         <p className="text-sm font-semibold text-slate-100">{email.subject || "(Tanpa subject)"}</p>
                         <p className="mt-1 text-xs text-slate-400">Dari: {email.fromEmail || "Unknown"}</p>
                       </div>
-                      <div className="text-xs text-slate-500">{email.receivedAt}</div>
+                      <div className="text-xs text-slate-500">{formatDateTime(email.receivedAt)}</div>
                     </div>
 
                     {email.otpCode && (
