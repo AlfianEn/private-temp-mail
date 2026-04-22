@@ -117,7 +117,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             ) : (
               <div className="space-y-3">
                 {emails.map((email) => (
-                  <div key={email.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <div key={email.id} className={`rounded-2xl border border-white/10 bg-black/20 p-4 transition hover:bg-white/[0.03] ${email.otpCode ? 'border-l-[3px] border-l-cyan-400/40' : ''}`}>
                     <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-slate-100">{email.subject || "(Tanpa subject)"}</p>
