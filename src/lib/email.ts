@@ -20,6 +20,17 @@ function normalizePlainText(value: string) {
   return normalizedLines || "(Email body kosong)";
 }
 
+export function extractDisplayImageUrls(htmlBody?: string | null) {
+  const html = htmlBody?.trim() || "";
+  if (!html) return [];
+
+  const matches = [...html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi)]
+    .map((match) => match[1]?.trim())
+    .filter((value): value is string => Boolean(value) && /^https?:\/\//i.test(value));
+
+  return [...new Set(matches)].slice(0, 6);
+}
+
 export function getDisplayEmailBody(textBody?: string | null, htmlBody?: string | null) {
   const text = textBody?.trim();
   if (text && !/<[a-z][\s\S]*>/i.test(text)) {

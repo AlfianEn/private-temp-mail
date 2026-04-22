@@ -8,7 +8,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { formatDateTime } from "@/lib/date";
 import { formatRelativeTime } from "@/lib/time";
-import { getDisplayEmailBody } from "@/lib/email";
+import { extractDisplayImageUrls, getDisplayEmailBody } from "@/lib/email";
 
 type InboxPageProps = {
   searchParams: Promise<{ jwt?: string }>;
@@ -120,6 +120,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                 {emails.map((email) => {
                   const isForwarded = Boolean(email.subject?.toLowerCase().startsWith("fwd:") || email.subject?.toLowerCase().startsWith("fw:"));
                   const isHtml = Boolean(email.htmlBody && email.htmlBody.trim());
+                  const imageUrls = extractDisplayImageUrls(email.htmlBody);
 
                   return (
                     <div key={email.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
@@ -142,6 +143,16 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                         <div className="text-xs tabular-nums text-slate-500">{formatRelativeTime(email.receivedAt)}</div>
                       </div>
                     </div>
+
+                    {imageUrls.length > 0 && (
+                      <div className="mb-3 grid gap-3 sm:grid-cols-2">
+                        {imageUrls.map((imageUrl) => (
+                          <a key={imageUrl} href={imageUrl} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-xl border border-white/10 bg-black/20">
+                            <img src={imageUrl} alt="Email image" className="h-44 w-full object-cover" loading="lazy" />
+                          </a>
+                        ))}
+                      </div>
+                    )}
 
                     <div className="rounded-xl bg-slate-900/80 px-4 py-3 text-sm text-slate-300">
                       <pre className="whitespace-pre-wrap break-words font-sans">{getDisplayEmailBody(email.textBody, email.htmlBody)}</pre>
