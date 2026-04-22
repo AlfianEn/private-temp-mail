@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
 import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
+import { LogoutButton } from "@/components/logout-button";
 import { formatDateTime } from "@/lib/date";
 import { getDisplayEmailBody } from "@/lib/email";
 
@@ -54,7 +55,10 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
               <h1 className="text-3xl font-bold tracking-tight">Inbox detail</h1>
               <p className="mt-2 text-sm text-slate-400">Riwayat email disimpan sampai 30 hari untuk inbox private ini.</p>
             </div>
-            <RefreshButton />
+            <div className="flex items-center gap-3">
+              <RefreshButton />
+              <LogoutButton />
+            </div>
           </div>
 
           <div className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 sm:grid-cols-3">
