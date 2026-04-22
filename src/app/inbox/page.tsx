@@ -4,6 +4,7 @@ import { db, schema } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
 import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
 import { formatDateTime } from "@/lib/date";
+import { getDisplayEmailBody } from "@/lib/email";
 
 type InboxPageProps = {
   searchParams: Promise<{ jwt?: string }>;
@@ -121,7 +122,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                     )}
 
                     <div className="rounded-xl bg-slate-900/80 px-4 py-3 text-sm text-slate-300">
-                      <pre className="whitespace-pre-wrap break-words font-sans">{email.textBody || email.htmlBody || "(Email body kosong)"}</pre>
+                      <pre className="whitespace-pre-wrap break-words font-sans">{getDisplayEmailBody(email.textBody, email.htmlBody)}</pre>
                     </div>
                   </div>
                 ))}
