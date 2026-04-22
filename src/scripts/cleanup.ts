@@ -1,9 +1,32 @@
-import { lt } from "drizzle-orm";
+import { inArray, lt } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { getRetentionCutoffIso } from "@/lib/retention";
+import { deleteStoredAsset } from "@/lib/email-assets";
 
 async function main() {
   const cutoff = getRetentionCutoffIso();
+
+  const expiredEmails = await db
+    .select({ id: schema.emails.id })
+    .from(schema.emails)
+    .where(lt(schema.emails.receivedAt, cutoff));
+
+  const expiredEmailIds = expiredEmails.map((email) => email.id);
+
+  const expiredAssets = expiredEmailIds.length > 0
+    ? await db
+      .select({ id: schema.emailAssets.id, storageFileName: schema.emailAssets.storageFileName })
+      .from(schema.emailAssets)
+      .where(inArray(schema.emailAssets.emailId, expiredEmailIds))
+    : [];
+
+  for (const asset of expiredAssets) {
+    await deleteStoredAsset(asset.storageFileName);
+  }
+
+  if (expiredEmailIds.length > 0) {
+    await db.delete(schema.emailAssets).where(inArray(schema.emailAssets.emailId, expiredEmailIds));
+  }
 
   const deletedEmails = await db
     .delete(schema.emails)
@@ -25,6 +48,7 @@ async function main() {
       success: true,
       cutoff,
       deletedEmails: deletedEmails.length,
+      deletedAssets: expiredAssets.length,
       deletedTokens: deletedTokens.length,
       deletedInboxes: deletedInboxes.length,
     }),

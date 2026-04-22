@@ -1,3 +1,5 @@
+import { rewriteCidSources } from "@/lib/email-assets";
+
 function decodeHtmlEntities(value: string) {
   return value
     .replace(/&nbsp;/gi, " ")
@@ -47,12 +49,20 @@ export function extractDisplayImageUrls(htmlBody?: string | null) {
   return [...new Set(matches)].slice(0, 6);
 }
 
-export function getDisplayEmailHtml(htmlBody?: string | null) {
+export function getDisplayEmailHtml(
+  htmlBody?: string | null,
+  assets: Array<{ id: number; contentId: string }> = [],
+  jwt?: string,
+) {
   const html = htmlBody?.trim() || "";
   if (!html) return null;
 
-  const sanitized = sanitizeHtml(html).trim();
+  let sanitized = sanitizeHtml(html).trim();
   if (!sanitized) return null;
+
+  if (jwt && assets.length > 0) {
+    sanitized = rewriteCidSources(sanitized, assets, jwt);
+  }
 
   return `<!doctype html>
 <html>

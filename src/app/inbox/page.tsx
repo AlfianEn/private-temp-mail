@@ -50,6 +50,11 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
       .where(eq(schema.emails.inboxId, inboxId))
       .orderBy(desc(schema.emails.receivedAt));
 
+    const assets = await db
+      .select()
+      .from(schema.emailAssets)
+      .where(eq(schema.emailAssets.inboxId, inboxId));
+
     return (
       <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-50">
         <AutoRefresh intervalMs={15000} />
@@ -121,7 +126,10 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                 {emails.map((email, index) => {
                   const isForwarded = Boolean(email.subject?.toLowerCase().startsWith("fwd:") || email.subject?.toLowerCase().startsWith("fw:"));
                   const isHtml = Boolean(email.htmlBody && email.htmlBody.trim());
-                  const displayHtml = getDisplayEmailHtml(email.htmlBody);
+                  const emailAssets = assets
+                    .filter((asset) => asset.emailId === email.id)
+                    .map((asset) => ({ id: asset.id, contentId: asset.contentId }));
+                  const displayHtml = getDisplayEmailHtml(email.htmlBody, emailAssets, jwt);
 
                   return (
                     <EmailCard

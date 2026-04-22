@@ -12,6 +12,7 @@ export function middleware(request: NextRequest) {
     || pathname.startsWith("/favicon")
     || pathname.startsWith("/icon")
     || pathname.startsWith("/public")
+    || pathname.startsWith("/api/email-assets/")
   ) {
     return NextResponse.next();
   }

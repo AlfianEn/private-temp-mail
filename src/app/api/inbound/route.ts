@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, schema } from "@/db";
 import { eq } from "drizzle-orm";
 import { extractOtp } from "@/lib/otp";
+import { storeInboundAttachments, type InboundAttachment } from "@/lib/inbound-attachments";
 
 function normalizeRecipient(value?: string | null) {
   return value?.trim().toLowerCase() || "";
@@ -17,6 +18,7 @@ export async function POST(request: NextRequest) {
     const textBody = body.text || body.textBody || body.strippedText || null;
     const htmlBody = body.html || body.htmlBody || body.strippedHtml || null;
     const rawHeaders = body.headers ? JSON.stringify(body.headers) : null;
+    const attachments = Array.isArray(body.attachments) ? body.attachments as InboundAttachment[] : [];
 
     if (!recipient) {
       return NextResponse.json({ error: "Recipient is required" }, { status: 400 });
@@ -42,6 +44,11 @@ export async function POST(request: NextRequest) {
       rawHeaders,
     }).returning();
 
+    const emailId = inserted[0]?.id;
+    const storedAssets = emailId
+      ? await storeInboundAttachments({ inboxId: inbox.id, emailId, attachments })
+      : [];
+
     await db
       .update(schema.inboxes)
       .set({ lastReceivedAt: new Date().toISOString() })
@@ -50,8 +57,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       inboxId: inbox.id,
-      emailId: inserted[0]?.id,
+      emailId,
       otpCode,
+      storedAssets: storedAssets.length,
     });
   } catch (error) {
     console.error("POST /api/inbound error:", error);

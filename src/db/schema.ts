@@ -31,3 +31,16 @@ export const inboxTokens = sqliteTable("inbox_tokens", {
   expiresAt: text("expires_at").notNull(),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
+
+export const emailAssets = sqliteTable("email_assets", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  inboxId: integer("inbox_id").notNull().references(() => inboxes.id),
+  emailId: integer("email_id").notNull().references(() => emails.id),
+  contentId: text("content_id").notNull(),
+  fileName: text("file_name"),
+  mimeType: text("mime_type").notNull(),
+  contentDisposition: text("content_disposition"),
+  storageFileName: text("storage_file_name").notNull(),
+  sizeBytes: integer("size_bytes").notNull().default(0),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
