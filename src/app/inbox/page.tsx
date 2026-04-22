@@ -4,6 +4,7 @@ import { db, schema } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
 import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
 import { LogoutButton } from "@/components/logout-button";
+import { CopyButton } from "@/components/copy-button";
 import { formatDateTime } from "@/lib/date";
 import { getDisplayEmailBody } from "@/lib/email";
 
@@ -67,7 +68,10 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
 
           <div className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 sm:grid-cols-3">
             <div className="sm:col-span-2">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Email address</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Email address</p>
+                <CopyButton text={inbox.address} label="Copy address" />
+              </div>
               <p className="mt-2 break-all rounded-xl bg-black/30 px-4 py-3 font-mono text-sm text-cyan-300">
                 {inbox.address}
               </p>
@@ -102,19 +106,30 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             </div>
 
             {emails.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 px-5 py-8 text-center text-sm text-slate-400">
-                Belum ada email masuk untuk inbox ini.
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/20 px-5 py-10 text-center">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                  <svg className="h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </div>
+                <p className="text-sm font-medium text-slate-300">Belum ada email masuk</p>
+                <p className="mt-1 text-xs text-slate-500 max-w-xs">Email yang dikirim ke address inbox ini akan muncul di sini secara otomatis.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {emails.map((email) => (
                   <div key={email.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
                     <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
+                      <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-slate-100">{email.subject || "(Tanpa subject)"}</p>
-                        <p className="mt-1 text-xs text-slate-400">Dari: {email.fromEmail || "Unknown"}</p>
+                        {email.otpCode && (
+                          <span className="inline-flex items-center rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
+                            OTP
+                          </span>
+                        )}
                       </div>
-                      <div className="text-xs text-slate-500">{formatDateTime(email.receivedAt)}</div>
+                      <div className="flex items-center gap-3">
+                        <p className="text-xs text-slate-400">Dari: {email.fromEmail || "Unknown"}</p>
+                        <div className="text-xs text-slate-500">{formatDateTime(email.receivedAt)}</div>
+                      </div>
                     </div>
 
                     {email.otpCode && (
