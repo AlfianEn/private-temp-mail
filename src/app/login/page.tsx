@@ -16,14 +16,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             private-temp-mail
           </div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Protected access</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Akses terlindungi</h1>
           <p className="mt-3 text-sm leading-6 text-slate-400">
-            Masukkan password untuk membuka inbox generator, riwayat email, dan fitur OTP internal.
+            Masukkan password untuk membuka generator inbox, riwayat email, dan fitur OTP internal.
           </p>
           <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
-            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Private access</span>
-            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">JWT inbox link</span>
-            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">OTP detection</span>
+            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Akses private</span>
+            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Link inbox JWT</span>
+            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">Deteksi OTP</span>
           </div>
           <LoginForm next={next} />
         </div>

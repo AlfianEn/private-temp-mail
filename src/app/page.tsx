@@ -101,7 +101,7 @@ export default function Home() {
             <div className="mt-6 space-y-4 rounded-2xl border border-white/10 bg-slate-900/80 p-5">
               <div>
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Inbox address</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Alamat email</p>
                   <CopyButton text={data.inbox.address} label="Copy address" />
                 </div>
                 <p className="mt-2 break-all rounded-xl bg-black/30 px-4 py-3 font-mono text-sm text-cyan-300">
@@ -111,7 +111,7 @@ export default function Home() {
 
               <div>
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Inbox link</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Link inbox</p>
                   <div className="flex items-center gap-2">
                     <CopyButton text={data.inboxUrl} label="Copy link" />
                     <a
@@ -134,12 +134,12 @@ export default function Home() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-xl bg-black/20 px-4 py-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Inbox ID</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">ID inbox</p>
                   <p className="mt-2 text-sm font-semibold text-slate-100">{data.inbox.id}</p>
                 </div>
                 <div className="rounded-xl bg-black/20 px-4 py-3">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Inbox expires</p>
-                  <p className="mt-2 text-sm font-semibold text-slate-100">{data.inbox.expiresAt}</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Berakhir</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-100">{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(data.inbox.expiresAt))}</p>
                 </div>
               </div>
             </div>

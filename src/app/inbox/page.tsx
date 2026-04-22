@@ -5,6 +5,7 @@ import { verifyInboxJwt } from "@/lib/jwt";
 import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
+import { formatDateTime } from "@/lib/date";
 import { formatRelativeTime } from "@/lib/time";
 import { getDisplayEmailBody } from "@/lib/email";
 
@@ -70,7 +71,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
           <div className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 sm:grid-cols-3">
             <div className="sm:col-span-2">
               <div className="flex items-center justify-between gap-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Email address</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Alamat email</p>
                 <CopyButton text={inbox.address} label="Copy address" />
               </div>
               <p className="mt-2 break-all rounded-xl bg-black/30 px-4 py-3 font-mono text-sm text-cyan-300">
@@ -82,16 +83,16 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
               <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{inbox.status}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Inbox ID</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">ID inbox</p>
               <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{inbox.id}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Created at</p>
-              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatRelativeTime(inbox.createdAt)}</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Dibuat</p>
+              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatDateTime(inbox.createdAt)}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Expires at</p>
-              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatRelativeTime(inbox.expiresAt)}</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Berakhir</p>
+              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatDateTime(inbox.expiresAt)}</p>
             </div>
           </div>
 
