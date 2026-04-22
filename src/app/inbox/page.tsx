@@ -5,7 +5,7 @@ import { verifyInboxJwt } from "@/lib/jwt";
 import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
-import { formatDateTime } from "@/lib/date";
+import { formatRelativeTime } from "@/lib/time";
 import { getDisplayEmailBody } from "@/lib/email";
 
 type InboxPageProps = {
@@ -87,11 +87,11 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Created at</p>
-              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatDateTime(inbox.createdAt)}</p>
+              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatRelativeTime(inbox.createdAt)}</p>
             </div>
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Expires at</p>
-              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatDateTime(inbox.expiresAt)}</p>
+              <p className="mt-2 rounded-xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{formatRelativeTime(inbox.expiresAt)}</p>
             </div>
           </div>
 
@@ -129,7 +129,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                       </div>
                       <div className="flex items-center gap-3">
                         <p className="text-xs text-slate-400">Dari: {email.fromEmail || "Unknown"}</p>
-                        <div className="text-xs text-slate-500">{formatDateTime(email.receivedAt)}</div>
+                        <div className="text-xs tabular-nums text-slate-500">{formatRelativeTime(email.receivedAt)}</div>
                       </div>
                     </div>
 
