@@ -11,6 +11,8 @@ type EmailCardProps = {
   displayBody: string;
   isForwarded: boolean;
   isHtml: boolean;
+  hasLocalCidAssets: boolean;
+  hasRemoteImages: boolean;
   isNewest: boolean;
 };
 
@@ -23,6 +25,8 @@ export function EmailCard({
   displayBody,
   isForwarded,
   isHtml,
+  hasLocalCidAssets,
+  hasRemoteImages,
   isNewest,
 }: EmailCardProps) {
   const [expanded, setExpanded] = useState(false);
@@ -45,6 +49,16 @@ export function EmailCard({
           {isHtml && (
             <span className="inline-flex items-center rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300">
               HTML
+            </span>
+          )}
+          {hasLocalCidAssets && (
+            <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+              CID lokal
+            </span>
+          )}
+          {hasRemoteImages && (
+            <span className="inline-flex items-center rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-rose-300">
+              Remote image diblok
             </span>
           )}
         </div>

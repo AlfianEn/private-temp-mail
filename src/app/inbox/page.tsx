@@ -9,7 +9,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { formatDateTime } from "@/lib/date";
 import { formatRelativeTime } from "@/lib/time";
-import { getDisplayEmailBody, getDisplayEmailHtml } from "@/lib/email";
+import { getDisplayEmailBody, getDisplayEmailHtml, hasRemoteImages } from "@/lib/email";
 
 type InboxPageProps = {
   searchParams: Promise<{ jwt?: string }>;
@@ -129,6 +129,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                   const emailAssets = assets
                     .filter((asset) => asset.emailId === email.id)
                     .map((asset) => ({ id: asset.id, contentId: asset.contentId }));
+                  const remoteImagesBlocked = hasRemoteImages(email.htmlBody);
                   const displayHtml = getDisplayEmailHtml(email.htmlBody, emailAssets, jwt);
 
                   return (
@@ -142,6 +143,8 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                       displayBody={getDisplayEmailBody(email.textBody, email.htmlBody)}
                       isForwarded={isForwarded}
                       isHtml={isHtml}
+                      hasLocalCidAssets={emailAssets.length > 0}
+                      hasRemoteImages={remoteImagesBlocked}
                       isNewest={index === 0}
                     />
                   );

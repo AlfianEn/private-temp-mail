@@ -49,6 +49,15 @@ export function extractDisplayImageUrls(htmlBody?: string | null) {
   return [...new Set(matches)].slice(0, 6);
 }
 
+function stripRemoteImageSources(value: string) {
+  return value.replace(/(<img[^>]*\ssrc=["'])https?:\/\/[^"']+(["'][^>]*>)/gi, "$1$2");
+}
+
+export function hasRemoteImages(htmlBody?: string | null) {
+  const html = htmlBody?.trim() || "";
+  return /<img[^>]+src=["']https?:\/\//i.test(html);
+}
+
 export function getDisplayEmailHtml(
   htmlBody?: string | null,
   assets: Array<{ id: number; contentId: string }> = [],
@@ -63,6 +72,8 @@ export function getDisplayEmailHtml(
   if (jwt && assets.length > 0) {
     sanitized = rewriteCidSources(sanitized, assets, jwt);
   }
+
+  sanitized = stripRemoteImageSources(sanitized);
 
   return `<!doctype html>
 <html>
