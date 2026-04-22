@@ -41,36 +41,26 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
-      <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col justify-center px-6 py-16">
-        <div className="mb-8 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
-                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                private-temp-mail
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Private inbox generator</h1>
-                <p className="mt-3 max-w-2xl text-sm text-slate-400 sm:text-base">
-                  Generate inbox private untuk OTP/testing. Riwayat email disimpan 30 hari, akses memakai JWT,
-                  dan semua inbox tetap private.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs text-slate-400">
-                <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">JWT access</span>
-                <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">OTP detection</span>
-                <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">30-day retention</span>
-              </div>
+      <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-6 py-16">
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300/90">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              private-temp-mail
             </div>
-            <LogoutButton />
+            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Inbox sementara, simpel, private.</h1>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-400 sm:text-base">
+              Buat inbox baru dalam satu klik. Cocok untuk OTP dan testing, dengan riwayat email tersimpan sampai 30 hari.
+            </p>
           </div>
+          <LogoutButton />
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+        <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-xl shadow-cyan-950/10 backdrop-blur">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold">Generate inbox baru</h2>
-              <p className="mt-1 text-sm text-slate-400">Satu klik untuk membuat alamat email inbox baru.</p>
+              <h2 className="text-lg font-semibold">Generate inbox baru</h2>
+              <p className="mt-1 text-sm text-slate-400">Alamat email dibuat otomatis dan siap dipakai.</p>
             </div>
             <button
               onClick={handleGenerate}
@@ -98,13 +88,13 @@ export default function Home() {
           )}
 
           {data && (
-            <div className="mt-6 space-y-4 rounded-2xl border border-white/10 bg-slate-900/80 p-5">
+            <div className="mt-6 space-y-4 rounded-[28px] border border-white/10 bg-black/20 p-5">
               <div>
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Alamat email</p>
                   <CopyButton text={data.inbox.address} label="Copy address" />
                 </div>
-                <p className="mt-2 break-all rounded-xl bg-black/30 px-4 py-3 font-mono text-sm text-cyan-300">
+                <p className="mt-2 break-all rounded-2xl bg-black/30 px-4 py-3 font-mono text-sm text-cyan-300">
                   {data.inbox.address}
                 </p>
               </div>
@@ -116,7 +106,7 @@ export default function Home() {
                     <CopyButton text={data.inboxUrl} label="Copy link" />
                     <a
                       href={data.inboxUrl}
-                      className="inline-flex items-center justify-center gap-1 rounded-lg border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20 active:scale-[0.98]"
+                      className="inline-flex items-center justify-center gap-1 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20 active:scale-[0.98]"
                     >
                       <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
                       Buka inbox
@@ -125,19 +115,19 @@ export default function Home() {
                 </div>
                 <a
                   href={data.inboxUrl}
-                  className="mt-2 block break-all rounded-xl bg-black/30 px-4 py-3 font-mono text-sm text-sky-300 underline-offset-4 hover:underline"
+                  className="mt-2 block break-all rounded-2xl bg-black/30 px-4 py-3 font-mono text-sm text-sky-300 underline-offset-4 hover:underline"
                 >
                   {data.inboxUrl}
                 </a>
-                <p className="mt-2 text-xs text-slate-500">Link ini nanti dipakai untuk buka inbox berdasarkan JWT.</p>
+                <p className="mt-2 text-xs text-slate-500">Link ini dipakai untuk buka inbox langsung.</p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-xl bg-black/20 px-4 py-3">
+                <div className="rounded-2xl bg-black/20 px-4 py-3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">ID inbox</p>
                   <p className="mt-2 text-sm font-semibold text-slate-100">{data.inbox.id}</p>
                 </div>
-                <div className="rounded-xl bg-black/20 px-4 py-3">
+                <div className="rounded-2xl bg-black/20 px-4 py-3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Berakhir</p>
                   <p className="mt-2 text-sm font-semibold text-slate-100">{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(data.inbox.expiresAt))}</p>
                 </div>

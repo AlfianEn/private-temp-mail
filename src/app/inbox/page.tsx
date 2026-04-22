@@ -50,25 +50,23 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
 
     return (
       <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-50">
-        <div className="mx-auto max-w-5xl space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
-                  <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                  private-temp-mail
-                </div>
-                <h1 className="text-3xl font-bold tracking-tight">Inbox detail</h1>
-                <p className="mt-2 text-sm text-slate-400">Riwayat email disimpan sampai 30 hari untuk inbox private ini.</p>
+        <div className="mx-auto max-w-4xl space-y-5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300/90">
+                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                private-temp-mail
               </div>
-              <div className="flex items-center gap-3">
-                <RefreshButton />
-                <LogoutButton />
-              </div>
+              <h1 className="mt-3 text-3xl font-bold tracking-tight">Inbox</h1>
+              <p className="mt-2 text-sm text-slate-400">Riwayat email untuk inbox ini disimpan sampai 30 hari.</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <RefreshButton />
+              <LogoutButton />
             </div>
           </div>
 
-          <div className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 sm:grid-cols-3">
+          <div className="grid gap-3 rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-xl shadow-cyan-950/10 sm:grid-cols-3">
             <div className="sm:col-span-2">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Alamat email</p>
