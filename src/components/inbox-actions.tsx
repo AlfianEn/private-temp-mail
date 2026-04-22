@@ -20,7 +20,7 @@ export function RefreshButton() {
       disabled={isRefreshing}
       className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-semibold text-slate-100 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {isRefreshing ? "Refreshing..." : "Refresh"}
+      {isRefreshing ? "Refreshing..." : "Refresh inbox"}
     </button>
   );
 }

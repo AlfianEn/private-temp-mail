@@ -95,7 +95,15 @@ export default function Home() {
               </div>
 
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Inbox link</p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Inbox link</p>
+                  <a
+                    href={data.inboxUrl}
+                    className="inline-flex items-center justify-center rounded-lg border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                  >
+                    Buka inbox
+                  </a>
+                </div>
                 <a
                   href={data.inboxUrl}
                   className="mt-2 block break-all rounded-xl bg-black/30 px-4 py-3 font-mono text-sm text-sky-300 underline-offset-4 hover:underline"
