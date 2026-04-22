@@ -35,6 +35,12 @@ body {
 
 .email-html-preview {
   line-height: 1.5;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.email-html-preview * {
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .email-html-preview img {
@@ -45,6 +51,13 @@ body {
 
 .email-html-preview table {
   max-width: 100%;
+  width: auto !important;
+  border-collapse: collapse;
+}
+
+.email-html-preview td,
+.email-html-preview th {
+  word-break: break-word;
 }
 
 .email-html-preview a {

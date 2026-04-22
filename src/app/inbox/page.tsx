@@ -147,7 +147,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                     <div className="overflow-hidden rounded-xl bg-white">
                       {displayHtml ? (
                         <div
-                          className="email-html-preview max-h-[36rem] overflow-auto bg-white text-slate-900"
+                          className="email-html-preview max-h-[36rem] overflow-auto bg-white p-3 text-slate-900 sm:p-4"
                           dangerouslySetInnerHTML={{ __html: displayHtml }}
                         />
                       ) : (
