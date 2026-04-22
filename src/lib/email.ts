@@ -51,8 +51,32 @@ export function getDisplayEmailHtml(htmlBody?: string | null) {
   const html = htmlBody?.trim() || "";
   if (!html) return null;
 
-  const sanitized = sanitizeHtml(html);
-  return sanitized.trim() || null;
+  const sanitized = sanitizeHtml(html).trim();
+  if (!sanitized) return null;
+
+  return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base target="_blank" />
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #ffffff;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      table {
+        max-width: 100%;
+      }
+    </style>
+  </head>
+  <body>${sanitized}</body>
+</html>`;
 }
 
 export function getDisplayEmailBody(textBody?: string | null, htmlBody?: string | null) {

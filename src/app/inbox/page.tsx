@@ -146,9 +146,11 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
 
                     <div className="overflow-hidden rounded-xl bg-white">
                       {displayHtml ? (
-                        <div
-                          className="email-html-preview max-h-[36rem] overflow-auto bg-white p-3 text-slate-900 sm:p-4"
-                          dangerouslySetInnerHTML={{ __html: displayHtml }}
+                        <iframe
+                          title={email.subject || `email-${email.id}`}
+                          srcDoc={displayHtml}
+                          sandbox="allow-popups allow-popups-to-escape-sandbox"
+                          className="h-[36rem] w-full bg-white"
                         />
                       ) : (
                         <div className="bg-slate-900/80 px-4 py-3 text-sm text-slate-300">
