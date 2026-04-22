@@ -41,16 +41,27 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
       <div className="mx-auto flex min-h-screen w-full max-w-4xl flex-col justify-center px-6 py-16">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p className="mb-2 text-sm font-medium text-cyan-400">private-temp-mail</p>
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Private inbox generator</h1>
-            <p className="mt-3 max-w-2xl text-sm text-slate-400 sm:text-base">
-              Generate inbox private untuk OTP/testing. Riwayat email dirancang untuk disimpan 30 hari, dan
-              akses inbox menggunakan link JWT per inbox.
-            </p>
+        <div className="mb-8 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                private-temp-mail
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Private inbox generator</h1>
+                <p className="mt-3 max-w-2xl text-sm text-slate-400 sm:text-base">
+                  Generate inbox private untuk OTP/testing. Riwayat email disimpan 30 hari, akses memakai JWT,
+                  dan semua inbox tetap private.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+                <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">JWT access</span>
+                <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">OTP detection</span>
+                <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1">30-day retention</span>
+              </div>
+            </div>
+            <LogoutButton />
           </div>
-          <LogoutButton />
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">

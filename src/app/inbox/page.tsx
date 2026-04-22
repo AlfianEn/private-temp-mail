@@ -49,15 +49,19 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
     return (
       <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-50">
         <div className="mx-auto max-w-5xl space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="mb-2 text-sm font-medium text-cyan-400">private-temp-mail</p>
-              <h1 className="text-3xl font-bold tracking-tight">Inbox detail</h1>
-              <p className="mt-2 text-sm text-slate-400">Riwayat email disimpan sampai 30 hari untuk inbox private ini.</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <RefreshButton />
-              <LogoutButton />
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                  private-temp-mail
+                </div>
+                <h1 className="text-3xl font-bold tracking-tight">Inbox detail</h1>
+                <p className="mt-2 text-sm text-slate-400">Riwayat email disimpan sampai 30 hari untuk inbox private ini.</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <RefreshButton />
+                <LogoutButton />
+              </div>
             </div>
           </div>
 
