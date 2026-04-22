@@ -1,22 +1,32 @@
-const OTP_LABEL_REGEX = /(?:otp|kode|code|verification|verifikasi|pin)[^\d]{0,20}(\d{4,8})/i;
+const OTP_LABEL_REGEX = /(?:otp|kode|code|verification|verifikasi|pin|passcode|one[-\s]?time)[^\d]{0,24}(\d{4,8})/i;
 const OTP_FALLBACK_REGEX = /\b\d{4,8}\b/g;
+const YEAR_LIKE_REGEX = /^(19\d{2}|20\d{2}|21\d{2})$/;
+
+function shouldSkipNumericCandidate(value: string) {
+  return YEAR_LIKE_REGEX.test(value);
+}
 
 export function extractOtp(text?: string | null) {
   if (!text) return null;
 
   const normalized = text.replace(/\s+/g, " ").trim();
-  const labeledMatch = normalized.match(OTP_LABEL_REGEX);
-  if (labeledMatch?.[1]) {
-    return labeledMatch[1];
+
+  const labeledMatches = [...normalized.matchAll(new RegExp(OTP_LABEL_REGEX.source, "gi"))]
+    .map((match) => match[1])
+    .filter((value): value is string => Boolean(value) && !shouldSkipNumericCandidate(value));
+
+  if (labeledMatches.length > 0) {
+    return labeledMatches[0];
   }
 
-  const matches = normalized.match(OTP_FALLBACK_REGEX);
-  if (!matches || matches.length === 0) return null;
+  const matches = (normalized.match(OTP_FALLBACK_REGEX) || []).filter((value) => !shouldSkipNumericCandidate(value));
+  if (matches.length === 0) return null;
 
-  if (matches.length === 1) {
-    return matches[0];
-  }
+  const preferredByLength = matches.find((value) => value.length === 6)
+    || matches.find((value) => value.length === 5)
+    || matches.find((value) => value.length === 4)
+    || matches.find((value) => value.length === 7)
+    || matches.find((value) => value.length === 8);
 
-  const preferred = matches.find((value) => value.length === 6) || matches.find((value) => value.length === 5);
-  return preferred || matches[0];
+  return preferredByLength || matches[0];
 }
