@@ -1,3 +1,5 @@
+import { WIB_TIME_ZONE } from "@/lib/date";
+
 export function formatRelativeTime(dateString?: string | null) {
   if (!dateString) return "—";
 
@@ -18,5 +20,6 @@ export function formatRelativeTime(dateString?: string | null) {
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "short",
     timeStyle: "short",
+    timeZone: WIB_TIME_ZONE,
   }).format(date);
 }

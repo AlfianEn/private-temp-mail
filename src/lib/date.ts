@@ -1,3 +1,5 @@
+export const WIB_TIME_ZONE = "Asia/Jakarta";
+
 export function formatDateTime(value?: string | null) {
   if (!value) return "—";
 
@@ -7,5 +9,6 @@ export function formatDateTime(value?: string | null) {
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: WIB_TIME_ZONE,
   }).format(date);
 }

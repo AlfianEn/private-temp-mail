@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
+import { formatDateTime } from "@/lib/date";
 
 type CreateInboxResponse = {
   inbox: {
@@ -129,7 +130,7 @@ export default function Home() {
                 </div>
                 <div className="rounded-2xl bg-black/20 px-4 py-3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Berakhir</p>
-                  <p className="mt-2 text-sm font-semibold text-slate-100">{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(data.inbox.expiresAt))}</p>
+                  <p className="mt-2 text-sm font-semibold text-slate-100">{formatDateTime(data.inbox.expiresAt)}</p>
                 </div>
               </div>
             </div>
