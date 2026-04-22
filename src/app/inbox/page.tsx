@@ -3,7 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
 import { AutoRefresh } from "@/components/auto-refresh";
-import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
+import { RefreshButton } from "@/components/inbox-actions";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { formatDateTime } from "@/lib/date";
@@ -122,15 +122,10 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                   const isHtml = Boolean(email.htmlBody && email.htmlBody.trim());
 
                   return (
-                    <div key={email.id} className={`rounded-2xl border border-white/10 bg-black/20 p-4 ${email.otpCode ? 'border-l-[3px] border-l-cyan-400/40' : ''}`}>
+                    <div key={email.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
                     <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="text-sm font-semibold text-slate-100">{email.subject || "(Tanpa subject)"}</p>
-                        {email.otpCode && (
-                          <span className="inline-flex items-center rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
-                            OTP
-                          </span>
-                        )}
                         {isForwarded && (
                           <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
                             Forwarded
@@ -147,18 +142,6 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                         <div className="text-xs tabular-nums text-slate-500">{formatRelativeTime(email.receivedAt)}</div>
                       </div>
                     </div>
-
-                    {email.otpCode && (
-                      <div className="mb-3 rounded-xl border border-cyan-500/20 bg-cyan-500/10 px-4 py-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-xs uppercase tracking-[0.2em] text-cyan-300">OTP detected</p>
-                            <p className="mt-2 font-mono text-lg font-bold text-cyan-200">{email.otpCode}</p>
-                          </div>
-                          <CopyOtpButton otp={email.otpCode} />
-                        </div>
-                      </div>
-                    )}
 
                     <div className="rounded-xl bg-slate-900/80 px-4 py-3 text-sm text-slate-300">
                       <pre className="whitespace-pre-wrap break-words font-sans">{getDisplayEmailBody(email.textBody, email.htmlBody)}</pre>
