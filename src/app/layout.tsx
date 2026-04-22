@@ -27,7 +27,10 @@ export default function RootLayout({
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-slate-950 text-slate-50">{children}</body>
+      <body className="min-h-full flex flex-col bg-slate-950 text-slate-50">
+        {children}
+        <div id="toast-container" />
+      </body>
     </html>
   );
 }
