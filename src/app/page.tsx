@@ -41,26 +41,26 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
-      <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-6 py-16">
-        <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mx-auto flex min-h-screen w-full max-w-2xl flex-col justify-center px-6 py-16">
+        <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300/90">
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
               private-temp-mail
             </div>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Inbox sementara, simpel, private.</h1>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-400 sm:text-base">
-              Buat inbox baru dalam satu klik. Cocok untuk OTP dan testing, dengan riwayat email tersimpan sampai 30 hari.
+            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Inbox sementara untuk OTP & testing.</h1>
+            <p className="mt-3 max-w-lg text-sm leading-6 text-slate-400 sm:text-base">
+              Satu klik untuk membuat inbox baru. Private, simpel, dan riwayat email disimpan sampai 30 hari.
             </p>
           </div>
           <LogoutButton />
         </div>
 
-        <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-xl shadow-cyan-950/10 backdrop-blur">
+        <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-6 shadow-lg shadow-cyan-950/10 backdrop-blur">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-semibold">Generate inbox baru</h2>
-              <p className="mt-1 text-sm text-slate-400">Alamat email dibuat otomatis dan siap dipakai.</p>
+              <p className="mt-1 text-sm text-slate-400">Alamat email dibuat otomatis dan siap dipakai sekarang.</p>
             </div>
             <button
               onClick={handleGenerate}
@@ -122,7 +122,7 @@ export default function Home() {
                 <p className="mt-2 text-xs text-slate-500">Link ini dipakai untuk buka inbox langsung.</p>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl bg-black/20 px-4 py-3">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">ID inbox</p>
                   <p className="mt-2 text-sm font-semibold text-slate-100">{data.inbox.id}</p>

@@ -94,13 +94,13 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-lg shadow-cyan-950/10">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold">Riwayat email</h2>
                 <p className="mt-1 text-sm text-slate-400">Email terbaru untuk inbox ini akan muncul di sini.</p>
               </div>
-              <span className="rounded-full bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-300">
+              <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
                 {emails.length} email
               </span>
             </div>
@@ -114,13 +114,13 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                 <p className="mt-1 text-xs text-slate-500 max-w-xs">Email yang dikirim ke address inbox ini akan muncul di sini secara otomatis.</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {emails.map((email) => {
                   const isForwarded = Boolean(email.subject?.toLowerCase().startsWith("fwd:") || email.subject?.toLowerCase().startsWith("fw:"));
                   const isHtml = Boolean(email.htmlBody && email.htmlBody.trim());
 
                   return (
-                    <div key={email.id} className={`rounded-2xl border border-white/10 bg-black/20 p-4 transition hover:bg-white/[0.03] ${email.otpCode ? 'border-l-[3px] border-l-cyan-400/40' : ''}`}>
+                    <div key={email.id} className={`rounded-2xl border border-white/10 bg-black/20 p-4 ${email.otpCode ? 'border-l-[3px] border-l-cyan-400/40' : ''}`}>
                     <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="text-sm font-semibold text-slate-100">{email.subject || "(Tanpa subject)"}</p>
