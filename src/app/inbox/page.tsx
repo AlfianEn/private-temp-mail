@@ -2,6 +2,7 @@ import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
+import { AutoRefresh } from "@/components/auto-refresh";
 import { CopyOtpButton, RefreshButton } from "@/components/inbox-actions";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
@@ -50,6 +51,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
 
     return (
       <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-50">
+        <AutoRefresh intervalMs={15000} />
         <div className="mx-auto max-w-4xl space-y-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -98,7 +100,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold">Riwayat email</h2>
-                <p className="mt-1 text-sm text-slate-400">Email terbaru untuk inbox ini akan muncul di sini.</p>
+                <p className="mt-1 text-sm text-slate-400">Email terbaru akan muncul otomatis tiap beberapa detik.</p>
               </div>
               <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
                 {emails.length} email
