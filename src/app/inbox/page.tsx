@@ -3,6 +3,7 @@ import { desc, eq } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
 import { AutoRefresh } from "@/components/auto-refresh";
+import { EmailCard } from "@/components/email-card";
 import { RefreshButton } from "@/components/inbox-actions";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
@@ -97,7 +98,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
           </div>
 
           <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 shadow-lg shadow-cyan-950/10">
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="sticky top-4 z-10 mb-4 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur">
               <div>
                 <h2 className="text-xl font-semibold">Riwayat email</h2>
                 <p className="mt-1 text-sm text-slate-400">Email terbaru akan muncul otomatis tiap beberapa detik.</p>
@@ -117,48 +118,24 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
               </div>
             ) : (
               <div className="space-y-2.5">
-                {emails.map((email) => {
+                {emails.map((email, index) => {
                   const isForwarded = Boolean(email.subject?.toLowerCase().startsWith("fwd:") || email.subject?.toLowerCase().startsWith("fw:"));
                   const isHtml = Boolean(email.htmlBody && email.htmlBody.trim());
                   const displayHtml = getDisplayEmailHtml(email.htmlBody);
 
                   return (
-                    <div key={email.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                    <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-sm font-semibold text-slate-100">{email.subject || "(Tanpa subject)"}</p>
-                        {isForwarded && (
-                          <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
-                            Forwarded
-                          </span>
-                        )}
-                        {isHtml && (
-                          <span className="inline-flex items-center rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300">
-                            HTML
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <p className="text-xs text-slate-400">Dari: {email.fromEmail || "Unknown"}</p>
-                        <div className="text-xs tabular-nums text-slate-500">{formatRelativeTime(email.receivedAt)}</div>
-                      </div>
-                    </div>
-
-                    <div className="overflow-hidden rounded-xl bg-white">
-                      {displayHtml ? (
-                        <iframe
-                          title={email.subject || `email-${email.id}`}
-                          srcDoc={displayHtml}
-                          sandbox="allow-popups allow-popups-to-escape-sandbox"
-                          className="h-[36rem] w-full bg-white"
-                        />
-                      ) : (
-                        <div className="bg-slate-900/80 px-4 py-3 text-sm text-slate-300">
-                          <pre className="whitespace-pre-wrap break-words font-sans">{getDisplayEmailBody(email.textBody, email.htmlBody)}</pre>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                    <EmailCard
+                      key={email.id}
+                      id={email.id}
+                      subject={email.subject || "(Tanpa subject)"}
+                      fromEmail={email.fromEmail || "Unknown"}
+                      receivedLabel={formatRelativeTime(email.receivedAt)}
+                      displayHtml={displayHtml}
+                      displayBody={getDisplayEmailBody(email.textBody, email.htmlBody)}
+                      isForwarded={isForwarded}
+                      isHtml={isHtml}
+                      isNewest={index === 0}
+                    />
                   );
                 })}
               </div>
