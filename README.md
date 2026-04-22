@@ -29,7 +29,7 @@ cp .env.example .env.local
 
 Variables:
 - `JWT_SECRET` = secret untuk sign/verify inbox JWT
-- `INBOX_DOMAIN` = domain email inbox, mis. `box.qiassychecksheet.online`
+- `INBOX_DOMAIN` = domain email inbox
 
 ## Local setup
 ```bash
@@ -54,52 +54,16 @@ Manual:
 npm run cleanup
 ```
 
-## Production deploy templates
-Files provided in `deploy/`:
-- `deploy/private-temp-mail.service`
-- `deploy/nginx-box.qiassychecksheet.online.conf`
-- `deploy/private-temp-mail-cleanup.service`
-- `deploy/private-temp-mail-cleanup.timer`
+## Deploy notes
+Project includes deployment templates for:
+- app service
+- nginx reverse proxy
+- cleanup timer
+- SMTP receiver wiring
 
-### App service install
-```bash
-cp .env.production.example .env.production
-npm install
-npm run db:push
-npm run build
-sudo cp deploy/private-temp-mail.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now private-temp-mail
-sudo systemctl status private-temp-mail
-```
-
-### Nginx install
-```bash
-sudo cp deploy/nginx-box.qiassychecksheet.online.conf /etc/nginx/sites-available/private-temp-mail
-sudo ln -s /etc/nginx/sites-available/private-temp-mail /etc/nginx/sites-enabled/private-temp-mail
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-### Cleanup timer install
-```bash
-sudo cp deploy/private-temp-mail-cleanup.service /etc/systemd/system/
-sudo cp deploy/private-temp-mail-cleanup.timer /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now private-temp-mail-cleanup.timer
-sudo systemctl list-timers | grep private-temp-mail-cleanup
-```
-
-### SMTP receiver notes
-Basic SMTP receiver prep is included:
-- `deploy/private-temp-mail-smtp.service`
-- `scripts/haraka-forwarder.js`
-- `haraka/README-SMTP.md`
-
-This part still needs final server-side wiring for Haraka config + port 25 exposure.
+Copy and adapt them to your own server/domain setup as needed.
 
 ## Notes
 - Inbox retention target: 30 hari
-- Tool ini dipisah dari `daily-checksheet-qa`
-- Planned deployment subdomain: `box.qiassychecksheet.online`
-- After nginx is live, issue HTTPS cert for `box.qiassychecksheet.online`
+- Tool ini dipisah dari app lain agar risiko dan operasional tetap terisolasi
+- Jika repo public, hindari commit detail infra spesifik, secret, dan runtime files
