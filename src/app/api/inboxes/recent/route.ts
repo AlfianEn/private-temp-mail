@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { desc, eq, gt } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { decodeMimeWords } from "@/lib/email";
 

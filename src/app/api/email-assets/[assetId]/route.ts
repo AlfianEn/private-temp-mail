@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db, schema } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { db } from "@/db";
 import { verifyInboxJwt } from "@/lib/jwt";
 import { getAssetStoragePath, isAllowedAssetMimeType } from "@/lib/email-assets";
 import { promises as fs } from "node:fs";
