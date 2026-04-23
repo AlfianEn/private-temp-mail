@@ -5,6 +5,7 @@ import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { ClearAllInboxesButton } from "@/components/clear-all-inboxes-button";
 import { DeleteInboxButton } from "@/components/delete-inbox-button";
+import { useToast } from "@/components/toast";
 import { formatDateTime, parseAppDate } from "@/lib/date";
 import { formatRelativeTime } from "@/lib/time";
 
@@ -56,6 +57,7 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const { showToast } = useToast();
 
   const loadRecentInboxes = async () => {
     try {
@@ -102,9 +104,11 @@ export default function Home() {
       }
 
       setData(json);
+      showToast("Inbox baru berhasil dibuat", "success");
       await loadRecentInboxes();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
+      showToast(err instanceof Error ? err.message : "Gagal membuat inbox", "error");
     } finally {
       setIsLoading(false);
     }

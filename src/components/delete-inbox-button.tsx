@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToast } from "@/components/toast";
 
 type DeleteInboxButtonProps = {
   inboxId: number;
@@ -11,6 +12,7 @@ type DeleteInboxButtonProps = {
 export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { showToast } = useToast();
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -24,9 +26,10 @@ export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps
         throw new Error(json.error || "Gagal menghapus inbox");
       }
 
+      showToast("Inbox dihapus", "success");
       onDeleted?.();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Gagal menghapus inbox");
+      showToast(error instanceof Error ? error.message : "Gagal menghapus inbox", "error");
       setIsDeleting(false);
     }
   };

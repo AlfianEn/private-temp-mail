@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToast } from "@/components/toast";
 
 type DeleteEmailButtonProps = {
   emailId: number;
@@ -11,6 +12,7 @@ type DeleteEmailButtonProps = {
 export function DeleteEmailButton({ emailId, jwt }: DeleteEmailButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { showToast } = useToast();
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -24,9 +26,10 @@ export function DeleteEmailButton({ emailId, jwt }: DeleteEmailButtonProps) {
         throw new Error(json.error || "Gagal menghapus email");
       }
 
-      window.location.reload();
+      showToast("Email dihapus", "success");
+      setTimeout(() => window.location.reload(), 800);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Gagal menghapus email");
+      showToast(error instanceof Error ? error.message : "Gagal menghapus email", "error");
       setIsDeleting(false);
     }
   };
