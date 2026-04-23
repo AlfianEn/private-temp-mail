@@ -1,10 +1,11 @@
-import { WIB_TIME_ZONE } from "@/lib/date";
+import { parseAppDate, WIB_TIME_ZONE } from "@/lib/date";
 
 export function formatRelativeTime(dateString?: string | null) {
   if (!dateString) return "—";
 
-  const date = new Date(dateString);
+  const date = parseAppDate(dateString);
   const now = new Date();
+  if (!date) return dateString;
   const diffMs = now.getTime() - date.getTime();
   const diffSec = Math.floor(diffMs / 1000);
   const diffMin = Math.floor(diffSec / 60);
