@@ -27,7 +27,6 @@ function sanitizeHtml(value: string) {
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<head[\s\S]*?<\/head>/gi, "")
     .replace(/\son\w+=("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-    .replace(/\ssrc=("cid:[^"]*"|'cid:[^']*')/gi, "")
     .replace(/<meta[^>]*>/gi, "")
     .replace(/<link[^>]*>/gi, "")
     .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
