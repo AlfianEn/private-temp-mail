@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { ClearAllInboxesButton } from "@/components/clear-all-inboxes-button";
 import { DeleteInboxButton } from "@/components/delete-inbox-button";
-import { formatDateTime } from "@/lib/date";
+import { formatDateTime, parseAppDate } from "@/lib/date";
+import { formatRelativeTime } from "@/lib/time";
 
 type CreateInboxResponse = {
   inbox: {
@@ -22,12 +23,37 @@ type RecentInbox = {
   address: string;
   expiresAt: string | null;
   createdAt: string;
+  lastReceivedAt: string | null;
+  latestEmailSubject: string | null;
+  latestEmailFrom: string | null;
+  latestEmailOtp: string | null;
   inboxUrl: string | null;
 };
+
+function getInboxStatus(expiresAt: string | null) {
+  const date = parseAppDate(expiresAt);
+  if (!date) {
+    return { label: "Tanpa expiry", className: "bg-slate-500/15 text-slate-300" };
+  }
+
+  const diffMs = date.getTime() - Date.now();
+  const diffHours = diffMs / (1000 * 60 * 60);
+
+  if (diffMs <= 0) {
+    return { label: "Expired", className: "bg-red-500/15 text-red-300" };
+  }
+
+  if (diffHours <= 24) {
+    return { label: "Segera expired", className: "bg-amber-500/15 text-amber-300" };
+  }
+
+  return { label: "Aktif", className: "bg-emerald-500/15 text-emerald-300" };
+}
 
 export default function Home() {
   const [data, setData] = useState<CreateInboxResponse | null>(null);
   const [recentInboxes, setRecentInboxes] = useState<RecentInbox[]>([]);
+  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -46,6 +72,22 @@ export default function Home() {
   useEffect(() => {
     void loadRecentInboxes();
   }, []);
+
+  const filteredInboxes = useMemo(() => {
+    const keyword = search.trim().toLowerCase();
+    if (!keyword) return recentInboxes;
+
+    return recentInboxes.filter((inbox) => {
+      return [
+        inbox.address,
+        inbox.latestEmailSubject,
+        inbox.latestEmailFrom,
+        inbox.latestEmailOtp,
+      ]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(keyword));
+    });
+  }, [recentInboxes, search]);
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -173,7 +215,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
-                    {recentInboxes.length} inbox
+                    {filteredInboxes.length}/{recentInboxes.length} inbox
                   </span>
                   <ClearAllInboxesButton onCleared={() => {
                     setRecentInboxes([]);
@@ -182,37 +224,79 @@ export default function Home() {
                 </div>
               </div>
 
+              <div className="mb-4">
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Cari address, subject, sender, atau OTP"
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-400/40"
+                />
+              </div>
+
               <div className="space-y-3">
-                {recentInboxes.map((inbox) => (
-                  <div key={inbox.id} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="min-w-0">
-                        <p className="truncate font-mono text-sm text-cyan-300">{inbox.address}</p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          Dibuat {formatDateTime(inbox.createdAt)} • Berakhir {formatDateTime(inbox.expiresAt)}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <CopyButton text={inbox.address} label="Salin alamat" />
-                        {inbox.inboxUrl && <CopyButton text={inbox.inboxUrl} label="Salin link" />}
-                        {inbox.inboxUrl && (
-                          <a
-                            href={inbox.inboxUrl}
-                            className="inline-flex items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
-                          >
-                            Buka inbox
-                          </a>
-                        )}
-                        <DeleteInboxButton inboxId={inbox.id} onDeleted={() => {
-                          setRecentInboxes((current) => current.filter((item) => item.id !== inbox.id));
-                          if (data?.inbox.id === inbox.id) {
-                            setData(null);
-                          }
-                        }} />
+                {filteredInboxes.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 px-4 py-8 text-center text-sm text-slate-400">
+                    Tidak ada inbox yang cocok.
+                  </div>
+                ) : filteredInboxes.map((inbox) => {
+                  const status = getInboxStatus(inbox.expiresAt);
+
+                  return (
+                    <div key={inbox.id} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="truncate font-mono text-sm text-cyan-300">{inbox.address}</p>
+                            <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider ${status.className}`}>
+                              {status.label}
+                            </span>
+                            {inbox.latestEmailOtp && (
+                              <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
+                                OTP {inbox.latestEmailOtp}
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="mt-1 text-xs text-slate-500">
+                            Dibuat {formatDateTime(inbox.createdAt)} • Berakhir {formatDateTime(inbox.expiresAt)}
+                          </p>
+
+                          {(inbox.latestEmailSubject || inbox.latestEmailFrom || inbox.lastReceivedAt) && (
+                            <div className="mt-3 rounded-2xl border border-white/10 bg-black/20 px-4 py-3">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Email terakhir</p>
+                              <p className="mt-2 truncate text-sm font-medium text-slate-100">
+                                {inbox.latestEmailSubject || "(Tanpa subject)"}
+                              </p>
+                              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-400">
+                                <span>{inbox.latestEmailFrom || "Pengirim tidak diketahui"}</span>
+                                {inbox.lastReceivedAt && <span>{formatRelativeTime(inbox.lastReceivedAt)}</span>}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <CopyButton text={inbox.address} label="Salin alamat" />
+                          {inbox.inboxUrl && <CopyButton text={inbox.inboxUrl} label="Salin link" />}
+                          {inbox.inboxUrl && (
+                            <a
+                              href={inbox.inboxUrl}
+                              className="inline-flex items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                            >
+                              Buka inbox
+                            </a>
+                          )}
+                          <DeleteInboxButton inboxId={inbox.id} onDeleted={() => {
+                            setRecentInboxes((current) => current.filter((item) => item.id !== inbox.id));
+                            if (data?.inbox.id === inbox.id) {
+                              setData(null);
+                            }
+                          }} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

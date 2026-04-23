@@ -17,6 +17,10 @@ export async function GET() {
       address: string;
       expiresAt: string | null;
       createdAt: string;
+      lastReceivedAt: string | null;
+      latestEmailSubject: string | null;
+      latestEmailFrom: string | null;
+      latestEmailOtp: string | null;
       inboxUrl: string | null;
     }>;
 
@@ -30,11 +34,20 @@ export async function GET() {
         orderBy: (inboxTokens, { desc }) => [desc(inboxTokens.createdAt)],
       });
 
+      const latestEmail = await db.query.emails.findFirst({
+        where: (emails, { eq }) => eq(emails.inboxId, inbox.id),
+        orderBy: (emails, { desc }) => [desc(emails.receivedAt)],
+      });
+
       result.push({
         id: inbox.id,
         address: inbox.address,
         expiresAt: inbox.expiresAt,
         createdAt: inbox.createdAt,
+        lastReceivedAt: inbox.lastReceivedAt,
+        latestEmailSubject: latestEmail?.subject || null,
+        latestEmailFrom: latestEmail?.fromEmail || null,
+        latestEmailOtp: latestEmail?.otpCode || null,
         inboxUrl: tokenRow?.token ? `/inbox?jwt=${tokenRow.token}` : null,
       });
     }
