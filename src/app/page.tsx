@@ -3,6 +3,8 @@ import { db, schema } from "@/db";
 import { decodeMimeWords } from "@/lib/email";
 import { HomeClient, type RecentInbox } from "@/components/home-client";
 
+export const dynamic = "force-dynamic";
+
 async function getInitialRecentInboxes(): Promise<RecentInbox[]> {
   try {
     const now = new Date().toISOString();
