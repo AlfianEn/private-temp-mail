@@ -28,6 +28,7 @@ export const inboxTokens = sqliteTable("inbox_tokens", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   inboxId: integer("inbox_id").notNull().references(() => inboxes.id),
   tokenHash: text("token_hash").notNull(),
+  token: text("token"),
   expiresAt: text("expires_at").notNull(),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
 });

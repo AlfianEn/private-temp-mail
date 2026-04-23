@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { formatDateTime } from "@/lib/date";
@@ -15,10 +15,35 @@ type CreateInboxResponse = {
   inboxUrl: string;
 };
 
+type RecentInbox = {
+  id: number;
+  address: string;
+  expiresAt: string | null;
+  createdAt: string;
+  inboxUrl: string | null;
+};
+
 export default function Home() {
   const [data, setData] = useState<CreateInboxResponse | null>(null);
+  const [recentInboxes, setRecentInboxes] = useState<RecentInbox[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const loadRecentInboxes = async () => {
+    try {
+      const res = await fetch("/api/inboxes/recent", { cache: "no-store" });
+      const json = (await res.json()) as { inboxes?: RecentInbox[] };
+      if (res.ok && Array.isArray(json.inboxes)) {
+        setRecentInboxes(json.inboxes);
+      }
+    } catch {
+      // ignore recent inbox load errors
+    }
+  };
+
+  useEffect(() => {
+    void loadRecentInboxes();
+  }, []);
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -33,6 +58,7 @@ export default function Home() {
       }
 
       setData(json);
+      await loadRecentInboxes();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
     } finally {
@@ -132,6 +158,47 @@ export default function Home() {
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Berakhir</p>
                   <p className="mt-2 text-sm font-semibold text-slate-100">{formatDateTime(data.inbox.expiresAt)}</p>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {recentInboxes.length > 0 && (
+            <div className="mt-6 rounded-[28px] border border-white/10 bg-black/20 p-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-base font-semibold text-slate-100">Inbox tersimpan</h3>
+                  <p className="mt-1 text-sm text-slate-400">Daftar inbox terbaru yang masih punya link aktif.</p>
+                </div>
+                <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
+                  {recentInboxes.length} inbox
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {recentInboxes.map((inbox) => (
+                  <div key={inbox.id} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="truncate font-mono text-sm text-cyan-300">{inbox.address}</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          Dibuat {formatDateTime(inbox.createdAt)} • Berakhir {formatDateTime(inbox.expiresAt)}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <CopyButton text={inbox.address} label="Copy address" />
+                        {inbox.inboxUrl && <CopyButton text={inbox.inboxUrl} label="Copy link" />}
+                        {inbox.inboxUrl && (
+                          <a
+                            href={inbox.inboxUrl}
+                            className="inline-flex items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                          >
+                            Buka inbox
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
