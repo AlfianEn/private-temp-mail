@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConfirmPopover } from "@/components/confirm-popover";
 
 type DeleteInboxButtonProps = {
   inboxId: number;
@@ -32,7 +32,7 @@ export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps
   };
 
   return (
-    <>
+    <div className="relative">
       <button
         type="button"
         onClick={() => setShowConfirm(true)}
@@ -51,7 +51,7 @@ export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps
           </>
         )}
       </button>
-      <ConfirmDialog
+      <ConfirmPopover
         open={showConfirm}
         title="Hapus inbox tersimpan ini?"
         description="Inbox, email, token, dan asset terkait akan dihapus permanen."
@@ -60,6 +60,6 @@ export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />
-    </>
+    </div>
   );
 }

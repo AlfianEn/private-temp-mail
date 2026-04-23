@@ -1,14 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConfirmPopover } from "@/components/confirm-popover";
 
 type DeleteEmailButtonProps = {
   emailId: number;
   jwt: string;
+  subject?: string;
 };
 
-export function DeleteEmailButton({ emailId, jwt }: DeleteEmailButtonProps) {
+function shortenSubject(subject?: string) {
+  if (!subject) return "(Tanpa subject)";
+  return subject.length > 72 ? `${subject.slice(0, 69)}...` : subject;
+}
+
+export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -32,7 +38,7 @@ export function DeleteEmailButton({ emailId, jwt }: DeleteEmailButtonProps) {
   };
 
   return (
-    <>
+    <div className="relative">
       <button
         type="button"
         onClick={() => setShowConfirm(true)}
@@ -51,15 +57,15 @@ export function DeleteEmailButton({ emailId, jwt }: DeleteEmailButtonProps) {
           </>
         )}
       </button>
-      <ConfirmDialog
+      <ConfirmPopover
         open={showConfirm}
         title="Hapus email ini?"
-        description="Email akan dihapus permanen dari inbox ini."
+        description={`Subject: ${shortenSubject(subject)}\n\nEmail akan dihapus permanen dari inbox ini.`}
         confirmLabel="Hapus email"
         onClose={() => setShowConfirm(false)}
         onConfirm={handleDelete}
         isLoading={isDeleting}
       />
-    </>
+    </div>
   );
 }

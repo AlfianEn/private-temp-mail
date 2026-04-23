@@ -45,8 +45,13 @@ export function EmailCard({
   return (
     <div className={`rounded-3xl border bg-slate-950/60 p-4 shadow-lg shadow-black/10 ${isNewest ? "border-cyan-400/30" : "border-white/10"}`}>
       <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-2">
-          <p className="truncate text-sm font-semibold text-slate-100 sm:text-[15px]">{subject}</p>
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex items-start justify-between gap-3">
+            <p className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-100 sm:text-[15px]">{subject}</p>
+            <div className="shrink-0 sm:hidden">
+              <DeleteEmailButton emailId={id} jwt={jwt} subject={subject} />
+            </div>
+          </div>
           <div className="flex flex-wrap gap-1.5">
             {isNewest && (
               <span className="inline-flex items-center rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
@@ -112,7 +117,9 @@ export function EmailCard({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
-        <DeleteEmailButton emailId={id} jwt={jwt} />
+        <div className="hidden sm:block">
+          <DeleteEmailButton emailId={id} jwt={jwt} subject={subject} />
+        </div>
         {hasRemoteImages && (
           <button
             type="button"

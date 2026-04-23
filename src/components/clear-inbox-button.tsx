@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConfirmPopover } from "@/components/confirm-popover";
 
 type ClearInboxButtonProps = {
   inboxId: number;
@@ -32,7 +32,7 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
   };
 
   return (
-    <>
+    <div className="relative">
       <button
         type="button"
         onClick={() => setShowConfirm(true)}
@@ -51,7 +51,7 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
           </>
         )}
       </button>
-      <ConfirmDialog
+      <ConfirmPopover
         open={showConfirm}
         title="Kosongkan inbox ini?"
         description="Semua email akan dihapus, tapi inbox-nya tetap ada."
@@ -61,6 +61,6 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
         onConfirm={handleClear}
         isLoading={isClearing}
       />
-    </>
+    </div>
   );
 }
