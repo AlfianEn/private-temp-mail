@@ -91,7 +91,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
     <main className="min-h-screen bg-slate-950 px-4 py-10 text-slate-50 sm:px-6 sm:py-14">
       <AutoRefresh intervalMs={15000} />
       <div className="mx-auto max-w-4xl space-y-4">
-        <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-xl shadow-cyan-950/5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-xl shadow-cyan-950/5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300/90">
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
@@ -101,7 +101,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             <p className="mt-2 text-sm text-slate-400">Riwayat email untuk inbox ini disimpan sampai 30 hari.</p>
             <p className="mt-1 break-all font-mono text-sm text-cyan-300/90">{inbox.address}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-start lg:justify-end">
             <Link
               href="/"
               className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-slate-900/70 px-4 text-sm font-semibold text-slate-100 transition hover:border-white/20 hover:bg-slate-900"
@@ -114,8 +114,8 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
           </div>
         </div>
 
-        <div className="grid gap-3 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-lg shadow-cyan-950/5 sm:grid-cols-3">
-          <div className="sm:col-span-2">
+        <div className="grid gap-3 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-lg shadow-cyan-950/5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="sm:col-span-2 xl:col-span-2">
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Alamat email</p>
               <CopyButton text={inbox.address} label="Salin alamat" />
@@ -143,7 +143,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
         </div>
 
         <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-5 shadow-lg shadow-cyan-950/5">
-          <div className="sticky top-3 z-10 mb-4 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 backdrop-blur">
+          <div className="sticky top-3 z-10 mb-4 flex flex-col gap-3 rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold">Riwayat email</h2>
               <p className="mt-1 text-sm text-slate-400">Email terbaru akan muncul otomatis setiap beberapa detik.</p>

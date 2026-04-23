@@ -159,9 +159,23 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
           )}
 
           {data && (
-            <div className="mt-6 space-y-4 rounded-[28px] border border-white/10 bg-black/20 p-5">
+            <div className="mt-6 space-y-4 rounded-[28px] border border-cyan-400/15 bg-black/20 p-5 shadow-lg shadow-cyan-950/10">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300/80">Inbox baru siap dipakai</p>
+                  <h3 className="mt-2 text-lg font-semibold text-slate-100">Simpan alamat atau buka inbox sekarang.</h3>
+                </div>
+                <a
+                  href={data.inboxUrl}
+                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-sky-400/20 bg-sky-400/10 px-4 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/20 active:scale-[0.98]"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+                  Buka inbox baru
+                </a>
+              </div>
+
               <div>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Alamat email</p>
                   <CopyButton text={data.inbox.address} label="Salin alamat" />
                 </div>
@@ -171,9 +185,9 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
               </div>
 
               <div>
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Link inbox</p>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <CopyButton text={data.inboxUrl} label="Salin link" />
                     <a
                       href={data.inboxUrl}
@@ -221,7 +235,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                   <h3 className="text-base font-semibold text-slate-100">Inbox tersimpan</h3>
                   <p className="mt-1 text-sm text-slate-400">Daftar inbox terbaru yang masih punya link aktif.</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
                     {filteredInboxes.length}/{recentInboxes.length} inbox
                   </span>
@@ -241,20 +255,29 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                   placeholder="Cari address, subject, sender, atau OTP"
                   className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-400/40"
                 />
+                {search.trim() && (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Menampilkan {filteredInboxes.length} hasil untuk <span className="font-semibold text-slate-300">“{search.trim()}”</span>
+                  </p>
+                )}
               </div>
 
               <div className="space-y-3">
                 {filteredInboxes.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 px-4 py-8 text-center text-sm text-slate-400">
-                    Tidak ada inbox yang cocok.
+                  <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 px-4 py-8 text-center">
+                    <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                      <svg className="h-4.5 w-4.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    </div>
+                    <p className="mt-3 text-sm font-medium text-slate-300">Tidak ada inbox yang cocok.</p>
+                    <p className="mt-1 text-xs text-slate-500">Coba kata kunci lain seperti address, pengirim, subject, atau OTP.</p>
                   </div>
                 ) : (
                   filteredInboxes.map((inbox) => {
                     const status = getInboxStatus(inbox.expiresAt);
 
                     return (
-                      <div key={inbox.id} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div key={inbox.id} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5 transition hover:border-white/15 hover:bg-slate-950/75">
+                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                           <div className="min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
                               <p className="truncate font-mono text-sm text-cyan-300">{inbox.address}</p>
@@ -288,7 +311,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                             )}
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+                          <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-center lg:justify-end">
                             <CopyButton text={inbox.address} label="Salin alamat" />
                             {inbox.inboxUrl && <CopyButton text={inbox.inboxUrl} label="Salin link" />}
                             {inbox.inboxUrl && (

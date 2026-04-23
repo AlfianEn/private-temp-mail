@@ -87,10 +87,10 @@ export function EmailCard({
       </div>
 
       {otpCode && (
-        <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-amber-400/15 bg-amber-500/10 px-4 py-3">
+        <div className="mb-3 flex flex-col gap-3 rounded-2xl border border-amber-400/15 bg-amber-500/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-300">Kode OTP</p>
-            <p className="mt-1 text-lg font-bold tracking-[0.24em] text-amber-100">{otpCode}</p>
+            <p className="mt-1 text-lg font-bold tracking-[0.24em] text-amber-100 sm:text-xl">{otpCode}</p>
           </div>
           <CopyButton text={otpCode} label="Salin OTP" />
         </div>
@@ -111,7 +111,7 @@ export function EmailCard({
         )}
       </div>
 
-      <div className="mt-3 flex flex-wrap justify-end gap-2">
+      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
         <DeleteEmailButton emailId={id} jwt={jwt} />
         {hasRemoteImages && (
           <button
