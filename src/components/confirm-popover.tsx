@@ -72,7 +72,7 @@ export function ConfirmPopover({
   return (
     <div
       ref={containerRef}
-      className="absolute right-0 top-full z-30 mt-2 w-[min(20rem,calc(100vw-2.5rem))] origin-top-right rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95"
+      className="fixed inset-x-4 top-1/2 z-30 mx-auto max-h-[calc(100dvh-2rem)] w-auto max-w-sm -translate-y-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:max-h-none sm:w-[20rem] sm:max-w-none sm:translate-y-0"
       role="dialog"
       aria-modal="false"
       aria-labelledby={titleId}
