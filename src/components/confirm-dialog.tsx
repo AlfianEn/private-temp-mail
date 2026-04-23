@@ -55,14 +55,14 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/80 p-4 backdrop-blur transition-opacity duration-200 sm:items-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur transition-opacity duration-200"
       onClick={() => {
         if (!isLoading) onClose();
       }}
       role="presentation"
     >
       <div
-        className="w-full max-w-md rounded-[28px] border border-white/10 bg-slate-950 p-5 shadow-2xl shadow-black/40 transition-all duration-200 ease-out animate-in fade-in zoom-in-95 slide-in-from-bottom-4 sm:translate-y-0"
+        className="max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-[28px] border border-white/10 bg-slate-950 p-5 shadow-2xl shadow-black/40 transition-all duration-200 ease-out animate-in fade-in zoom-in-95"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
