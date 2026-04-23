@@ -48,8 +48,11 @@ export function extractDisplayImageUrls(htmlBody?: string | null) {
   return [...new Set(matches)].slice(0, 6);
 }
 
-function stripRemoteImageSources(value: string) {
-  return value.replace(/(<img[^>]*\ssrc=["'])https?:\/\/[^"']+(["'][^>]*>)/gi, "$1$2");
+function replaceRemoteImagesWithPlaceholder(value: string) {
+  return value.replace(
+    /<img([^>]*?)\ssrc=["']https?:\/\/[^"']+["']([^>]*?)>/gi,
+    '<div class="blocked-remote-image">Gambar eksternal diblok</div>',
+  );
 }
 
 export function hasRemoteImages(htmlBody?: string | null) {
@@ -72,7 +75,7 @@ export function getDisplayEmailHtml(
     sanitized = rewriteCidSources(sanitized, assets, jwt);
   }
 
-  sanitized = stripRemoteImageSources(sanitized);
+  sanitized = replaceRemoteImagesWithPlaceholder(sanitized);
 
   return `<!doctype html>
 <html>
@@ -92,6 +95,19 @@ export function getDisplayEmailHtml(
       }
       table {
         max-width: 100%;
+      }
+      .blocked-remote-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 96px;
+        padding: 16px;
+        border: 1px dashed #fda4af;
+        border-radius: 12px;
+        background: #fff1f2;
+        color: #9f1239;
+        font: 600 13px/1.4 Arial, sans-serif;
+        text-align: center;
       }
     </style>
   </head>
