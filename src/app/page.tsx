@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
+import { ClearAllInboxesButton } from "@/components/clear-all-inboxes-button";
 import { DeleteInboxButton } from "@/components/delete-inbox-button";
 import { formatDateTime } from "@/lib/date";
 
@@ -170,9 +171,15 @@ export default function Home() {
                   <h3 className="text-base font-semibold text-slate-100">Inbox tersimpan</h3>
                   <p className="mt-1 text-sm text-slate-400">Daftar inbox terbaru yang masih punya link aktif.</p>
                 </div>
-                <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
-                  {recentInboxes.length} inbox
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
+                    {recentInboxes.length} inbox
+                  </span>
+                  <ClearAllInboxesButton onCleared={() => {
+                    setRecentInboxes([]);
+                    setData(null);
+                  }} />
+                </div>
               </div>
 
               <div className="space-y-3">
