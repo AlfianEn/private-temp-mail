@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { useToast } from "@/components/toast";
 
 type ClearInboxButtonProps = {
   inboxId: number;
@@ -12,7 +11,6 @@ type ClearInboxButtonProps = {
 export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
   const [isClearing, setIsClearing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const { showToast } = useToast();
 
   const handleClear = async () => {
     setIsClearing(true);
@@ -26,10 +24,9 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
         throw new Error(json.error || "Gagal membersihkan inbox");
       }
 
-      showToast("Inbox dikosongkan", "success");
-      setTimeout(() => window.location.reload(), 800);
+      window.location.reload();
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "Gagal membersihkan inbox", "error");
+      alert(error instanceof Error ? error.message : "Gagal membersihkan inbox");
       setIsClearing(false);
     }
   };

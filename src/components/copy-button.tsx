@@ -1,20 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useToast } from "@/components/toast";
 
 export function CopyButton({ text, label = "Salin" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
-  const { showToast } = useToast();
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      showToast("Disalin ke clipboard", "success");
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      showToast("Gagal menyalin", "error");
       setCopied(false);
     }
   };
