@@ -5,6 +5,7 @@ import { verifyInboxJwt } from "@/lib/jwt";
 import { AutoRefresh } from "@/components/auto-refresh";
 import { EmailCard } from "@/components/email-card";
 import { RefreshButton } from "@/components/inbox-actions";
+import { ClearInboxButton } from "@/components/clear-inbox-button";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { formatDateTime } from "@/lib/date";
@@ -75,6 +76,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
               >
                 Generate inbox
               </Link>
+              <ClearInboxButton inboxId={inbox.id} jwt={jwt} />
               <RefreshButton />
               <LogoutButton />
             </div>
