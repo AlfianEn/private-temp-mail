@@ -1,5 +1,39 @@
 import { rewriteCidSources } from "@/lib/email-assets";
 
+export function decodeMimeWords(value: string): string {
+  if (!value) return value;
+  return value
+    .replace(/=\?([^?]+)\?([BQ])\?([^?]+)\?=/gi, (_match, charset, encoding, encodedText) => {
+      try {
+        if (encoding.toUpperCase() === "Q") {
+          const decoded = encodedText
+            .replace(/_/g, " ")
+            .replace(/=([0-9A-F]{2})/gi, (_: string, hex: string) => String.fromCharCode(parseInt(hex, 16)));
+          try {
+            return new TextDecoder(charset).decode(
+              new Uint8Array(decoded.split("").map((c: string) => c.charCodeAt(0)))
+            );
+          } catch {
+            return decoded;
+          }
+        }
+        if (encoding.toUpperCase() === "B") {
+          const binary = atob(encodedText);
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+          try {
+            return new TextDecoder(charset).decode(bytes);
+          } catch {
+            return binary;
+          }
+        }
+        return encodedText;
+      } catch {
+        return encodedText;
+      }
+    });
+}
+
 function decodeHtmlEntities(value: string) {
   return value
     .replace(/&nbsp;/gi, " ")

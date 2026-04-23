@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { desc, eq, gt } from "drizzle-orm";
 import { db, schema } from "@/db";
+import { decodeMimeWords } from "@/lib/email";
 
 export async function GET() {
   try {
@@ -45,8 +46,8 @@ export async function GET() {
         expiresAt: inbox.expiresAt,
         createdAt: inbox.createdAt,
         lastReceivedAt: inbox.lastReceivedAt,
-        latestEmailSubject: latestEmail?.subject || null,
-        latestEmailFrom: latestEmail?.fromEmail || null,
+        latestEmailSubject: decodeMimeWords(latestEmail?.subject || "") || null,
+        latestEmailFrom: decodeMimeWords(latestEmail?.fromEmail || "") || null,
         latestEmailOtp: latestEmail?.otpCode || null,
         inboxUrl: tokenRow?.token ? `/inbox?jwt=${tokenRow.token}` : null,
       });
