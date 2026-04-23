@@ -136,7 +136,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
               type="button"
               onClick={handleGenerate}
               disabled={isLoading}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 active:scale-[0.98] sm:w-auto disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? (
                 <>
@@ -153,8 +153,12 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
           </div>
 
           {error && (
-            <div className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
-              {error}
+            <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
+              <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+              <div>
+                <p className="font-semibold text-red-100">Gagal membuat inbox</p>
+                <p className="mt-0.5 text-red-200/90">{error}</p>
+              </div>
             </div>
           )}
 
@@ -164,10 +168,11 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300/80">Inbox baru siap dipakai</p>
                   <h3 className="mt-2 text-lg font-semibold text-slate-100">Simpan alamat atau buka inbox sekarang.</h3>
+                  <p className="mt-1 text-sm text-slate-400">Inbox ini juga otomatis masuk ke daftar inbox tersimpan di bawah.</p>
                 </div>
                 <a
                   href={data.inboxUrl}
-                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-sky-400/20 bg-sky-400/10 px-4 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/20 active:scale-[0.98]"
+                  className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-sky-400/20 bg-sky-400/10 px-4 text-sm font-semibold text-sky-200 transition hover:bg-sky-400/20 active:scale-[0.98] sm:w-auto"
                 >
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
                   Buka inbox baru
@@ -227,6 +232,10 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
               </div>
               <p className="mt-3 text-sm font-medium text-slate-300">Belum ada inbox tersimpan</p>
               <p className="mt-1 text-xs text-slate-500">Inbox baru yang kamu buat akan langsung muncul di sini.</p>
+              <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-medium text-slate-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                Recent inbox tampil berdasarkan data terbaru
+              </div>
             </div>
           ) : (
             <div className="mt-6 rounded-[28px] border border-white/10 bg-black/20 p-5">
@@ -249,12 +258,25 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
               </div>
 
               <div className="mb-4">
-                <input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Cari address, subject, sender, atau OTP"
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-400/40"
-                />
+                <div className="relative">
+                  <svg className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Cari address, subject, sender, atau OTP"
+                    className="w-full rounded-2xl border border-white/10 bg-slate-950/70 py-3 pl-11 pr-12 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-400/40"
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch("")}
+                      className="absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:border-white/20 hover:bg-white/10"
+                      aria-label="Reset pencarian"
+                    >
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                  )}
+                </div>
                 {search.trim() && (
                   <p className="mt-2 text-xs text-slate-500">
                     Menampilkan {filteredInboxes.length} hasil untuk <span className="font-semibold text-slate-300">“{search.trim()}”</span>
@@ -317,7 +339,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                             {inbox.inboxUrl && (
                               <a
                                 href={inbox.inboxUrl}
-                                className="inline-flex items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+                                className="col-span-2 inline-flex items-center justify-center rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20 lg:col-span-1"
                               >
                                 Buka inbox
                               </a>
