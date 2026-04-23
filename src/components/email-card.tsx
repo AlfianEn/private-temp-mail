@@ -44,31 +44,33 @@ export function EmailCard({
       <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 space-y-2">
           <p className="truncate text-sm font-semibold text-slate-100 sm:text-[15px]">{subject}</p>
-          {isNewest && (
-            <span className="inline-flex items-center rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
-              Terbaru
-            </span>
-          )}
-          {isForwarded && (
-            <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
-              Forwarded
-            </span>
-          )}
-          {isHtml && (
-            <span className="inline-flex items-center rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300">
-              HTML
-            </span>
-          )}
-          {hasLocalCidAssets && (
-            <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
-              CID lokal
-            </span>
-          )}
-          {hasRemoteImages && (
-            <span className="inline-flex items-center rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-rose-300">
-              Remote image diblok
-            </span>
-          )}
+          <div className="flex flex-wrap gap-1.5">
+            {isNewest && (
+              <span className="inline-flex items-center rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
+                Terbaru
+              </span>
+            )}
+            {isForwarded && (
+              <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
+                Forward
+              </span>
+            )}
+            {isHtml && (
+              <span className="inline-flex items-center rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-violet-300">
+                HTML
+              </span>
+            )}
+            {hasLocalCidAssets && (
+              <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+                Asset lokal
+              </span>
+            )}
+            {hasRemoteImages && (
+              <span className="inline-flex items-center rounded-full bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-rose-300">
+                Gambar remote diblok
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex shrink-0 flex-col items-start gap-1 text-left sm:items-end sm:text-right">
           <p className="max-w-[240px] truncate text-xs text-slate-400">Dari: {fromEmail}</p>
@@ -98,7 +100,7 @@ export function EmailCard({
             onClick={() => setShowRemoteImages((value) => !value)}
             className="inline-flex items-center gap-1 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
           >
-            {showRemoteImages ? "Sembunyikan remote image" : "Load remote images"}
+            {showRemoteImages ? "Sembunyikan gambar remote" : "Tampilkan gambar remote"}
           </button>
         )}
         <button

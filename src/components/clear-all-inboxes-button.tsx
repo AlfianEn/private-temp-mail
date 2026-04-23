@@ -34,7 +34,7 @@ export function ClearAllInboxesButton({ onCleared }: ClearAllInboxesButtonProps)
       disabled={isClearing}
       className="inline-flex items-center justify-center rounded-xl border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-200 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {isClearing ? "Menghapus semua..." : "Clear all addresses"}
+      {isClearing ? "Menghapus semua..." : "Hapus semua inbox"}
     </button>
   );
 }

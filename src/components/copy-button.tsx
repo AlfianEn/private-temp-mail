@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
+export function CopyButton({ text, label = "Salin" }: { text: string; label?: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -27,7 +27,7 @@ export function CopyButton({ text, label = "Copy" }: { text: string; label?: str
       {copied ? (
         <>
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-          Copied
+          Tersalin
         </>
       ) : (
         <>

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "private-temp-mail",
-  description: "Private internal temp mail inbox generator with JWT access and OTP detection.",
+  title: "Private Temp Mail",
+  description: "Generator inbox email sementara privat untuk OTP dan testing internal dengan akses JWT.",
 };
 
 export default function RootLayout({

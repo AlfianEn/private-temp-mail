@@ -37,7 +37,7 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
       disabled={isClearing}
       className="inline-flex h-10 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/20 disabled:cursor-not-allowed disabled:opacity-60"
     >
-      {isClearing ? "Membersihkan..." : "Clear all emails"}
+      {isClearing ? "Membersihkan..." : "Kosongkan inbox"}
     </button>
   );
 }

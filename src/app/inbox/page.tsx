@@ -68,13 +68,14 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
               </div>
               <h1 className="mt-3 text-3xl font-bold tracking-tight">Inbox</h1>
               <p className="mt-2 text-sm text-slate-400">Riwayat email untuk inbox ini disimpan sampai 30 hari.</p>
+              <p className="mt-1 break-all font-mono text-sm text-cyan-300/90">{inbox.address}</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/"
                 className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-slate-900/70 px-4 text-sm font-semibold text-slate-100 transition hover:border-white/20 hover:bg-slate-900"
               >
-                Generate inbox
+                Buat inbox
               </Link>
               <ClearInboxButton inboxId={inbox.id} jwt={jwt} />
               <RefreshButton />
@@ -86,14 +87,14 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             <div className="sm:col-span-2">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Alamat email</p>
-                <CopyButton text={inbox.address} label="Copy address" />
+                <CopyButton text={inbox.address} label="Salin alamat" />
               </div>
               <p className="mt-2 break-all rounded-2xl border border-cyan-400/10 bg-cyan-500/5 px-4 py-3 font-mono text-sm text-cyan-300">
                 {inbox.address}
               </p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Status</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Status inbox</p>
               <p className="mt-2 rounded-2xl bg-black/20 px-4 py-3 text-sm font-semibold text-slate-100">{inbox.status}</p>
             </div>
             <div>
@@ -114,7 +115,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
             <div className="sticky top-3 z-10 mb-4 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/85 px-4 py-3 backdrop-blur">
               <div>
                 <h2 className="text-xl font-semibold">Riwayat email</h2>
-                <p className="mt-1 text-sm text-slate-400">Email terbaru akan muncul otomatis tiap beberapa detik.</p>
+                <p className="mt-1 text-sm text-slate-400">Email terbaru akan muncul otomatis setiap beberapa detik.</p>
               </div>
               <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
                 {emails.length} email
@@ -149,7 +150,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                       id={email.id}
                       subject={email.subject || "(Tanpa subject)"}
                       jwt={jwt}
-                      fromEmail={email.fromEmail || "Unknown"}
+                      fromEmail={email.fromEmail || "Tidak diketahui"}
                       receivedLabel={formatRelativeTime(email.receivedAt)}
                       displayHtml={displayHtml}
                       displayHtmlWithRemote={displayHtmlWithRemote}
