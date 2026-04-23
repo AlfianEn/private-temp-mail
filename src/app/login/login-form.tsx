@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export function LoginForm({ next }: { next: string }) {
-  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -26,8 +24,7 @@ export function LoginForm({ next }: { next: string }) {
         throw new Error(json.error || "Login gagal");
       }
 
-      router.replace(next);
-      router.refresh();
+      window.location.assign(next);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login gagal");
     } finally {
@@ -36,7 +33,7 @@ export function LoginForm({ next }: { next: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+    <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
       <div className="rounded-[22px] border border-white/10 bg-slate-950/50 p-4 sm:p-5">
         <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-300">
           Password akses

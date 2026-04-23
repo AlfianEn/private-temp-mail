@@ -18,9 +18,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-10 text-slate-50 sm:px-6 sm:py-16">
-      <div className="mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-6xl items-center justify-center">
-        <div className="grid w-full gap-0 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] shadow-2xl shadow-cyan-950/20 backdrop-blur md:grid-cols-[1.1fr_0.9fr]">
+    <main className="min-h-dvh bg-slate-950 px-4 py-6 text-slate-50 sm:px-6 sm:py-10">
+      <div className="mx-auto flex min-h-dvh w-full max-w-6xl items-center justify-center">
+        <div className="grid w-full overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] shadow-2xl shadow-cyan-950/20 backdrop-blur md:grid-cols-[1.1fr_0.9fr]">
           <div className="relative hidden overflow-hidden border-r border-white/10 bg-gradient-to-br from-cyan-500/15 via-slate-950 to-slate-950 p-8 md:block lg:p-10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.16),transparent_28%)]" />
             <div className="relative flex h-full flex-col justify-between">
@@ -50,7 +50,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               private-temp-mail
             </div>
             <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Akses terlindungi</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-400">
+            <p className="mt-3 max-w-lg text-sm leading-6 text-slate-400">
               Masukkan password untuk membuka generator inbox, riwayat email, dan fitur OTP internal.
             </p>
             <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">

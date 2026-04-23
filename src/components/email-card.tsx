@@ -116,15 +116,17 @@ export function EmailCard({
         {hasRemoteImages && (
           <button
             onClick={() => setShowRemoteImages((value) => !value)}
-            className="inline-flex items-center gap-1 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition-all duration-200 hover:border-sky-400/30 hover:bg-sky-400/20 active:scale-95"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 text-xs font-semibold text-sky-200 transition-all duration-200 hover:border-sky-400/30 hover:bg-sky-400/20 active:scale-95"
           >
-            {showRemoteImages ? "Sembunyikan gambar remote" : "Tampilkan gambar remote"}
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+            {showRemoteImages ? "Sembunyikan gambar" : "Tampilkan gambar"}
           </button>
         )}
         <button
           onClick={() => setExpanded((value) => !value)}
-          className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/70 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-white/20 hover:bg-slate-900 active:scale-95"
+          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/70 px-3 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-white/20 hover:bg-slate-900 active:scale-95"
         >
+          <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
           {expanded ? "Ringkas" : "Lihat penuh"}
         </button>
       </div>
