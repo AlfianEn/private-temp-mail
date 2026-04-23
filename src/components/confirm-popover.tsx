@@ -14,69 +14,43 @@ type ConfirmPopoverProps = {
   onClose: () => void;
 };
 
-export function ConfirmPopover({
-  open,
+type ConfirmCardProps = {
+  titleId: string;
+  descriptionId: string;
+  title: string;
+  description: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  toneClass: string;
+  iconClass: string;
+  isLoading: boolean;
+  onConfirm: () => void;
+  onClose: () => void;
+  className: string;
+};
+
+function ConfirmCard({
+  titleId,
+  descriptionId,
   title,
   description,
-  confirmLabel = "Lanjutkan",
-  cancelLabel = "Batal",
-  tone = "danger",
-  isLoading = false,
+  confirmLabel,
+  cancelLabel,
+  toneClass,
+  iconClass,
+  isLoading,
   onConfirm,
   onClose,
-}: ConfirmPopoverProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const titleId = useId();
-  const descriptionId = useId();
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !isLoading) {
-        onClose();
-      }
-    };
-
-    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      if (!containerRef.current) return;
-      const target = event.target;
-      if (target instanceof Node && !containerRef.current.contains(target) && !isLoading) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("touchstart", handlePointerDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("touchstart", handlePointerDown);
-    };
-  }, [open, isLoading, onClose]);
-
-  if (!open) return null;
-
-  const toneClass =
-    tone === "warning"
-      ? "border-amber-400/20 bg-amber-500 text-slate-950 hover:border-amber-300/40 hover:bg-amber-400"
-      : "border-red-400/20 bg-red-500 text-white hover:border-red-300/40 hover:bg-red-400";
-
-  const iconClass =
-    tone === "warning"
-      ? "border-amber-400/20 bg-amber-500/10 text-amber-200"
-      : "border-red-400/20 bg-red-500/10 text-red-200";
-
+  className,
+}: ConfirmCardProps) {
   return (
     <div
-      ref={containerRef}
-      className="fixed inset-x-4 top-1/2 z-30 mx-auto max-h-[calc(100dvh-2rem)] w-auto max-w-sm -translate-y-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2 sm:max-h-none sm:w-[20rem] sm:max-w-none sm:translate-y-0"
+      className={className}
       role="dialog"
       aria-modal="false"
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
+      onClick={(event) => event.stopPropagation()}
     >
       <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-2xl border ${iconClass}`}>
         <svg className="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
@@ -109,5 +83,110 @@ export function ConfirmPopover({
         </button>
       </div>
     </div>
+  );
+}
+
+export function ConfirmPopover({
+  open,
+  title,
+  description,
+  confirmLabel = "Lanjutkan",
+  cancelLabel = "Batal",
+  tone = "danger",
+  isLoading = false,
+  onConfirm,
+  onClose,
+}: ConfirmPopoverProps) {
+  const desktopRef = useRef<HTMLDivElement | null>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isLoading) {
+        onClose();
+      }
+    };
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (window.innerWidth < 640) return;
+      if (!desktopRef.current) return;
+      const target = event.target;
+      if (target instanceof Node && !desktopRef.current.contains(target) && !isLoading) {
+        onClose();
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [open, isLoading, onClose]);
+
+  if (!open) return null;
+
+  const toneClass =
+    tone === "warning"
+      ? "border-amber-400/20 bg-amber-500 text-slate-950 hover:border-amber-300/40 hover:bg-amber-400"
+      : "border-red-400/20 bg-red-500 text-white hover:border-red-300/40 hover:bg-red-400";
+
+  const iconClass =
+    tone === "warning"
+      ? "border-amber-400/20 bg-amber-500/10 text-amber-200"
+      : "border-red-400/20 bg-red-500/10 text-red-200";
+
+  return (
+    <>
+      <div
+        className="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-[2px] sm:hidden"
+        onClick={() => {
+          if (!isLoading) onClose();
+        }}
+        role="presentation"
+      />
+
+      <ConfirmCard
+        titleId={titleId}
+        descriptionId={descriptionId}
+        title={title}
+        description={description}
+        confirmLabel={confirmLabel}
+        cancelLabel={cancelLabel}
+        toneClass={toneClass}
+        iconClass={iconClass}
+        isLoading={isLoading}
+        onConfirm={onConfirm}
+        onClose={onClose}
+        className="fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[calc(100dvh-2rem)] w-auto max-w-sm -translate-y-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:hidden"
+      />
+
+      <div ref={desktopRef} className="hidden sm:block">
+        <ConfirmCard
+          titleId={titleId}
+          descriptionId={descriptionId}
+          title={title}
+          description={description}
+          confirmLabel={confirmLabel}
+          cancelLabel={cancelLabel}
+          toneClass={toneClass}
+          iconClass={iconClass}
+          isLoading={isLoading}
+          onConfirm={onConfirm}
+          onClose={onClose}
+          className="absolute right-0 top-full z-30 mt-2 w-[20rem] origin-top-right rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95"
+        />
+      </div>
+    </>
   );
 }
