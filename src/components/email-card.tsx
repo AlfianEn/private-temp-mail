@@ -35,10 +35,10 @@ export function EmailCard({
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className={`rounded-2xl border bg-black/20 p-4 ${isNewest ? "border-cyan-400/30" : "border-white/10"}`}>
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-sm font-semibold text-slate-100">{subject}</p>
+    <div className={`rounded-3xl border bg-slate-950/60 p-4 shadow-lg shadow-black/10 ${isNewest ? "border-cyan-400/30" : "border-white/10"}`}>
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 space-y-2">
+          <p className="truncate text-sm font-semibold text-slate-100 sm:text-[15px]">{subject}</p>
           {isNewest && (
             <span className="inline-flex items-center rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
               Terbaru
@@ -65,32 +65,32 @@ export function EmailCard({
             </span>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <p className="text-xs text-slate-400">Dari: {fromEmail}</p>
+        <div className="flex shrink-0 flex-col items-start gap-1 text-left sm:items-end sm:text-right">
+          <p className="max-w-[240px] truncate text-xs text-slate-400">Dari: {fromEmail}</p>
           <div className="text-xs tabular-nums text-slate-500">{receivedLabel}</div>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl bg-white">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm">
         {displayHtml ? (
           <iframe
             title={subject || `email-${id}`}
             srcDoc={displayHtml}
             sandbox="allow-popups allow-popups-to-escape-sandbox"
-            className={`w-full bg-white transition-[height] duration-200 ${expanded ? "h-[36rem]" : "h-[14rem]"}`}
+            className={`w-full bg-white transition-[height] duration-200 ${expanded ? "h-[36rem]" : "h-[15rem]"}`}
           />
         ) : (
-          <div className={`bg-slate-900/80 px-4 py-3 text-sm text-slate-300 ${expanded ? "" : "max-h-56 overflow-hidden"}`}>
+          <div className={`bg-slate-900/90 px-4 py-3 text-sm text-slate-300 ${expanded ? "" : "max-h-56 overflow-hidden"}`}>
             <pre className="whitespace-pre-wrap break-words font-sans">{displayBody}</pre>
           </div>
         )}
       </div>
 
-      <div className="mt-3 flex justify-end gap-2">
+      <div className="mt-3 flex flex-wrap justify-end gap-2">
         <DeleteEmailButton emailId={id} jwt={jwt} />
         <button
           onClick={() => setExpanded((value) => !value)}
-          className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+          className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/70 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-white/20 hover:bg-slate-900"
         >
           {expanded ? "Ringkas" : "Lihat penuh"}
         </button>

@@ -18,7 +18,7 @@ export function RefreshButton() {
     <button
       onClick={handleRefresh}
       disabled={isRefreshing}
-      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-semibold text-slate-100 transition hover:bg-white/10 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/70 px-4 text-sm font-semibold text-slate-100 transition hover:border-white/20 hover:bg-slate-900 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
     >
       {isRefreshing ? (
         <>
