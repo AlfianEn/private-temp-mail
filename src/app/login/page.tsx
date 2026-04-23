@@ -1,3 +1,6 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { isValidAccessCookie, ACCESS_COOKIE_NAME } from "@/lib/access";
 import { LoginForm } from "./login-form";
 
 type LoginPageProps = {
@@ -7,6 +10,12 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const next = params.next || "/";
+  const cookieStore = await cookies();
+  const accessCookie = cookieStore.get(ACCESS_COOKIE_NAME)?.value;
+
+  if (isValidAccessCookie(accessCookie)) {
+    redirect(next.startsWith("/") ? next : "/");
+  }
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-10 text-slate-50 sm:px-6 sm:py-16">
