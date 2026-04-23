@@ -116,14 +116,14 @@ export function EmailCard({
         {hasRemoteImages && (
           <button
             onClick={() => setShowRemoteImages((value) => !value)}
-            className="inline-flex items-center gap-1 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+            className="inline-flex items-center gap-1 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition-all duration-200 hover:border-sky-400/30 hover:bg-sky-400/20 active:scale-95"
           >
             {showRemoteImages ? "Sembunyikan gambar remote" : "Tampilkan gambar remote"}
           </button>
         )}
         <button
           onClick={() => setExpanded((value) => !value)}
-          className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/70 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-white/20 hover:bg-slate-900"
+          className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/70 px-3 py-1.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-white/20 hover:bg-slate-900 active:scale-95"
         >
           {expanded ? "Ringkas" : "Lihat penuh"}
         </button>
