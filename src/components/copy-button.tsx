@@ -17,6 +17,7 @@ export function CopyButton({ text, label = "Salin" }: { text: string; label?: st
 
   return (
     <button
+      type="button"
       onClick={handleCopy}
       className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-all duration-200 active:scale-95 ${
         copied

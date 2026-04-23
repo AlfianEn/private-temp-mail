@@ -9,6 +9,13 @@ export function LoginForm({ next }: { next: string }) {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedPassword) {
+      setError("Password wajib diisi");
+      return;
+    }
+
     setError("");
     setIsLoading(true);
 
@@ -16,7 +23,7 @@ export function LoginForm({ next }: { next: string }) {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password: trimmedPassword }),
       });
 
       const json = (await response.json()) as { error?: string };
@@ -24,7 +31,7 @@ export function LoginForm({ next }: { next: string }) {
         throw new Error(json.error || "Login gagal");
       }
 
-      window.location.assign(next);
+      window.location.assign(next.startsWith("/") ? next : "/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login gagal");
     } finally {
@@ -42,17 +49,27 @@ export function LoginForm({ next }: { next: string }) {
           id="password"
           type="password"
           value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-sm text-slate-100 outline-none ring-0 placeholder:text-slate-500 focus:border-cyan-400/40"
+          onChange={(event) => {
+            setPassword(event.target.value);
+            if (error) setError("");
+          }}
+          className={`w-full rounded-xl border bg-slate-900/80 px-4 py-3 text-sm text-slate-100 outline-none ring-0 placeholder:text-slate-500 transition ${
+            error
+              ? "border-red-400/40 focus:border-red-400/60"
+              : "border-white/10 focus:border-cyan-400/40"
+          }`}
           placeholder="Masukkan password"
           autoFocus
+          autoComplete="current-password"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? "login-error" : "login-help"}
           required
         />
-        <p className="mt-2 text-xs leading-5 text-slate-500">Akses ini dipakai buat buka generator inbox dan riwayat email private.</p>
+        <p id="login-help" className="mt-2 text-xs leading-5 text-slate-500">Akses ini dipakai buat buka generator inbox dan riwayat email private.</p>
       </div>
 
       {error && (
-        <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm">
+        <div id="login-error" className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm" role="alert" aria-live="polite">
           <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
           <span className="text-red-200">{error}</span>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -25,6 +25,9 @@ export function ConfirmDialog({
   onConfirm,
   onClose,
 }: ConfirmDialogProps) {
+  const titleId = useId();
+  const descriptionId = useId();
+
   useEffect(() => {
     if (!open) return;
 
@@ -52,26 +55,26 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/80 p-4 backdrop-blur sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/80 p-4 backdrop-blur transition-opacity duration-200 sm:items-center"
       onClick={() => {
         if (!isLoading) onClose();
       }}
       role="presentation"
     >
       <div
-        className="w-full max-w-md rounded-[28px] border border-white/10 bg-slate-950 p-5 shadow-2xl shadow-black/40 transition-all duration-200 sm:translate-y-0"
+        className="w-full max-w-md rounded-[28px] border border-white/10 bg-slate-950 p-5 shadow-2xl shadow-black/40 transition-all duration-200 ease-out animate-in fade-in zoom-in-95 slide-in-from-bottom-4 sm:translate-y-0"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="confirm-dialog-title"
-        aria-describedby="confirm-dialog-description"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
       >
         <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-200">
           <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
         </div>
 
-        <h3 id="confirm-dialog-title" className="text-lg font-semibold text-slate-50">{title}</h3>
-        <p id="confirm-dialog-description" className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+        <h3 id={titleId} className="text-lg font-semibold text-slate-50">{title}</h3>
+        <p id={descriptionId} className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
 
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button

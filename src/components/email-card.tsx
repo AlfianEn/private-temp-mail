@@ -115,6 +115,7 @@ export function EmailCard({
         <DeleteEmailButton emailId={id} jwt={jwt} />
         {hasRemoteImages && (
           <button
+            type="button"
             onClick={() => setShowRemoteImages((value) => !value)}
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 text-xs font-semibold text-sky-200 transition-all duration-200 hover:border-sky-400/30 hover:bg-sky-400/20 active:scale-95"
           >
@@ -123,6 +124,7 @@ export function EmailCard({
           </button>
         )}
         <button
+          type="button"
           onClick={() => setExpanded((value) => !value)}
           className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/70 px-3 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-white/20 hover:bg-slate-900 active:scale-95"
         >
