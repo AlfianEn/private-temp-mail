@@ -155,6 +155,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                       displayHtml={displayHtml}
                       displayHtmlWithRemote={displayHtmlWithRemote}
                       displayBody={getDisplayEmailBody(email.textBody, email.htmlBody)}
+                      otpCode={email.otpCode}
                       isForwarded={isForwarded}
                       isHtml={isHtml}
                       hasLocalCidAssets={emailAssets.length > 0}

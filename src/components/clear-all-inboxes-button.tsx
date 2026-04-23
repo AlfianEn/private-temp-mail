@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 type ClearAllInboxesButtonProps = {
   onCleared?: () => void;
@@ -8,10 +9,9 @@ type ClearAllInboxesButtonProps = {
 
 export function ClearAllInboxesButton({ onCleared }: ClearAllInboxesButtonProps) {
   const [isClearing, setIsClearing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleClear = async () => {
-    if (!window.confirm("Hapus semua address inbox tersimpan beserta email, token, dan asset terkait?")) return;
-
     setIsClearing(true);
     try {
       const res = await fetch("/api/inboxes", { method: "DELETE" });
@@ -29,12 +29,23 @@ export function ClearAllInboxesButton({ onCleared }: ClearAllInboxesButtonProps)
   };
 
   return (
-    <button
-      onClick={handleClear}
-      disabled={isClearing}
-      className="inline-flex items-center justify-center rounded-xl border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-200 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      {isClearing ? "Menghapus semua..." : "Hapus semua inbox"}
-    </button>
+    <>
+      <button
+        onClick={() => setShowConfirm(true)}
+        disabled={isClearing}
+        className="inline-flex items-center justify-center rounded-xl border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-200 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {isClearing ? "Menghapus semua..." : "Hapus semua inbox"}
+      </button>
+      <ConfirmDialog
+        open={showConfirm}
+        title="Hapus semua inbox tersimpan?"
+        description="Semua inbox, email, token, dan asset tersimpan akan dihapus permanen."
+        confirmLabel="Hapus semua"
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleClear}
+        isLoading={isClearing}
+      />
+    </>
   );
 }

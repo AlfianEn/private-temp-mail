@@ -37,7 +37,7 @@ export function LoginForm({ next }: { next: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-      <div>
+      <div className="rounded-[22px] border border-white/10 bg-slate-950/50 p-4 sm:p-5">
         <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-300">
           Password akses
         </label>
@@ -51,6 +51,7 @@ export function LoginForm({ next }: { next: string }) {
           autoFocus
           required
         />
+        <p className="mt-2 text-xs leading-5 text-slate-500">Akses ini dipakai buat buka generator inbox dan riwayat email private.</p>
       </div>
 
       {error && (

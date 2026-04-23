@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 type ClearInboxButtonProps = {
   inboxId: number;
@@ -9,10 +10,9 @@ type ClearInboxButtonProps = {
 
 export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
   const [isClearing, setIsClearing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleClear = async () => {
-    if (!window.confirm("Hapus semua email di inbox ini? Inbox-nya tetap ada, tapi semua isi email akan dibersihkan.")) return;
-
     setIsClearing(true);
     try {
       const res = await fetch(`/api/inboxes/${inboxId}/emails?jwt=${encodeURIComponent(jwt)}`, {
@@ -32,12 +32,24 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
   };
 
   return (
-    <button
-      onClick={handleClear}
-      disabled={isClearing}
-      className="inline-flex h-10 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/20 disabled:cursor-not-allowed disabled:opacity-60"
-    >
-      {isClearing ? "Membersihkan..." : "Kosongkan inbox"}
-    </button>
+    <>
+      <button
+        onClick={() => setShowConfirm(true)}
+        disabled={isClearing}
+        className="inline-flex h-10 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {isClearing ? "Membersihkan..." : "Kosongkan inbox"}
+      </button>
+      <ConfirmDialog
+        open={showConfirm}
+        title="Kosongkan inbox ini?"
+        description="Semua email akan dihapus, tapi inbox-nya tetap ada."
+        confirmLabel="Kosongkan"
+        tone="warning"
+        onClose={() => setShowConfirm(false)}
+        onConfirm={handleClear}
+        isLoading={isClearing}
+      />
+    </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CopyButton } from "@/components/copy-button";
 import { DeleteEmailButton } from "@/components/delete-email-button";
 
 type EmailCardProps = {
@@ -12,6 +13,7 @@ type EmailCardProps = {
   displayHtml: string | null;
   displayHtmlWithRemote: string | null;
   displayBody: string;
+  otpCode: string | null;
   isForwarded: boolean;
   isHtml: boolean;
   hasLocalCidAssets: boolean;
@@ -28,6 +30,7 @@ export function EmailCard({
   displayHtml,
   displayHtmlWithRemote,
   displayBody,
+  otpCode,
   isForwarded,
   isHtml,
   hasLocalCidAssets,
@@ -48,6 +51,11 @@ export function EmailCard({
             {isNewest && (
               <span className="inline-flex items-center rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-cyan-300">
                 Terbaru
+              </span>
+            )}
+            {otpCode && (
+              <span className="inline-flex items-center rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
+                OTP {otpCode}
               </span>
             )}
             {isForwarded && (
@@ -77,6 +85,16 @@ export function EmailCard({
           <div className="text-xs tabular-nums text-slate-500">{receivedLabel}</div>
         </div>
       </div>
+
+      {otpCode && (
+        <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-amber-400/15 bg-amber-500/10 px-4 py-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-300">Kode OTP</p>
+            <p className="mt-1 text-lg font-bold tracking-[0.24em] text-amber-100">{otpCode}</p>
+          </div>
+          <CopyButton text={otpCode} label="Salin OTP" />
+        </div>
+      )}
 
       <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm">
         {activeHtml ? (
