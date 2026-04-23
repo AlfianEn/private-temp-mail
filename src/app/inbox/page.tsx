@@ -68,7 +68,13 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
               <h1 className="mt-3 text-3xl font-bold tracking-tight">Inbox</h1>
               <p className="mt-2 text-sm text-slate-400">Riwayat email untuk inbox ini disimpan sampai 30 hari.</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href="/"
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 bg-slate-900/70 px-4 text-sm font-semibold text-slate-100 transition hover:border-white/20 hover:bg-slate-900"
+              >
+                Generate inbox
+              </Link>
               <RefreshButton />
               <LogoutButton />
             </div>
