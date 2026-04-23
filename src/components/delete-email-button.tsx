@@ -36,7 +36,7 @@ export function DeleteEmailButton({ emailId, jwt }: DeleteEmailButtonProps) {
       <button
         onClick={() => setShowConfirm(true)}
         disabled={isDeleting}
-        className="inline-flex items-center gap-1 rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-200 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-1 rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-200 transition-all duration-200 hover:border-red-400/30 hover:bg-red-500/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isDeleting ? "Menghapus..." : "Hapus"}
       </button>

@@ -18,10 +18,10 @@ export function CopyButton({ text, label = "Salin" }: { text: string; label?: st
   return (
     <button
       onClick={handleCopy}
-      className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition ${
+      className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-all duration-200 active:scale-95 ${
         copied
           ? "border-green-400/30 bg-green-400/15 text-green-300"
-          : "border-cyan-400/20 bg-cyan-400/10 text-cyan-200 hover:bg-cyan-400/20"
+          : "border-cyan-400/20 bg-cyan-400/10 text-cyan-200 hover:border-cyan-400/30 hover:bg-cyan-400/20"
       }`}
     >
       {copied ? (
