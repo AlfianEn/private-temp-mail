@@ -4,7 +4,7 @@ import { ACCESS_COOKIE_NAME, isValidAccessCookie } from "@/lib/access";
 
 const PUBLIC_PATHS = new Set(["/login", "/api/auth/login", "/api/inbound"]);
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { DeleteEmailButton } from "@/components/delete-email-button";
 
 type EmailCardProps = {
   id: number;
   subject: string;
+  jwt: string;
   fromEmail: string;
   receivedLabel: string;
   displayHtml: string | null;
@@ -19,6 +21,7 @@ type EmailCardProps = {
 export function EmailCard({
   id,
   subject,
+  jwt,
   fromEmail,
   receivedLabel,
   displayHtml,
@@ -83,7 +86,8 @@ export function EmailCard({
         )}
       </div>
 
-      <div className="mt-3 flex justify-end">
+      <div className="mt-3 flex justify-end gap-2">
+        <DeleteEmailButton emailId={id} jwt={jwt} />
         <button
           onClick={() => setExpanded((value) => !value)}
           className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-white/10"

@@ -137,6 +137,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                       key={email.id}
                       id={email.id}
                       subject={email.subject || "(Tanpa subject)"}
+                      jwt={jwt}
                       fromEmail={email.fromEmail || "Unknown"}
                       receivedLabel={formatRelativeTime(email.receivedAt)}
                       displayHtml={displayHtml}
