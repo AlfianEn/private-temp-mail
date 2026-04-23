@@ -139,6 +139,9 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                     .map((asset) => ({ id: asset.id, contentId: asset.contentId }));
                   const remoteImagesBlocked = hasRemoteImages(email.htmlBody);
                   const displayHtml = getDisplayEmailHtml(email.htmlBody, emailAssets, jwt);
+                  const displayHtmlWithRemote = remoteImagesBlocked
+                    ? getDisplayEmailHtml(email.htmlBody, emailAssets, jwt, true)
+                    : displayHtml;
 
                   return (
                     <EmailCard
@@ -149,6 +152,7 @@ export default async function InboxPage({ searchParams }: InboxPageProps) {
                       fromEmail={email.fromEmail || "Unknown"}
                       receivedLabel={formatRelativeTime(email.receivedAt)}
                       displayHtml={displayHtml}
+                      displayHtmlWithRemote={displayHtmlWithRemote}
                       displayBody={getDisplayEmailBody(email.textBody, email.htmlBody)}
                       isForwarded={isForwarded}
                       isHtml={isHtml}

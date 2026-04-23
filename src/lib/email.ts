@@ -60,23 +60,7 @@ export function hasRemoteImages(htmlBody?: string | null) {
   return /<img[^>]+src=["']https?:\/\//i.test(html);
 }
 
-export function getDisplayEmailHtml(
-  htmlBody?: string | null,
-  assets: Array<{ id: number; contentId: string }> = [],
-  jwt?: string,
-) {
-  const html = htmlBody?.trim() || "";
-  if (!html) return null;
-
-  let sanitized = sanitizeHtml(html).trim();
-  if (!sanitized) return null;
-
-  if (jwt && assets.length > 0) {
-    sanitized = rewriteCidSources(sanitized, assets, jwt);
-  }
-
-  sanitized = replaceRemoteImagesWithPlaceholder(sanitized);
-
+function wrapDisplayHtml(value: string) {
   return `<!doctype html>
 <html>
   <head>
@@ -111,8 +95,31 @@ export function getDisplayEmailHtml(
       }
     </style>
   </head>
-  <body>${sanitized}</body>
+  <body>${value}</body>
 </html>`;
+}
+
+export function getDisplayEmailHtml(
+  htmlBody?: string | null,
+  assets: Array<{ id: number; contentId: string }> = [],
+  jwt?: string,
+  allowRemoteImages = false,
+) {
+  const html = htmlBody?.trim() || "";
+  if (!html) return null;
+
+  let sanitized = sanitizeHtml(html).trim();
+  if (!sanitized) return null;
+
+  if (jwt && assets.length > 0) {
+    sanitized = rewriteCidSources(sanitized, assets, jwt);
+  }
+
+  if (!allowRemoteImages) {
+    sanitized = replaceRemoteImagesWithPlaceholder(sanitized);
+  }
+
+  return wrapDisplayHtml(sanitized);
 }
 
 export function getDisplayEmailBody(textBody?: string | null, htmlBody?: string | null) {

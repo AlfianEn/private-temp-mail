@@ -10,6 +10,7 @@ type EmailCardProps = {
   fromEmail: string;
   receivedLabel: string;
   displayHtml: string | null;
+  displayHtmlWithRemote: string | null;
   displayBody: string;
   isForwarded: boolean;
   isHtml: boolean;
@@ -25,6 +26,7 @@ export function EmailCard({
   fromEmail,
   receivedLabel,
   displayHtml,
+  displayHtmlWithRemote,
   displayBody,
   isForwarded,
   isHtml,
@@ -33,6 +35,9 @@ export function EmailCard({
   isNewest,
 }: EmailCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [showRemoteImages, setShowRemoteImages] = useState(false);
+
+  const activeHtml = showRemoteImages && displayHtmlWithRemote ? displayHtmlWithRemote : displayHtml;
 
   return (
     <div className={`rounded-3xl border bg-slate-950/60 p-4 shadow-lg shadow-black/10 ${isNewest ? "border-cyan-400/30" : "border-white/10"}`}>
@@ -72,10 +77,10 @@ export function EmailCard({
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm">
-        {displayHtml ? (
+        {activeHtml ? (
           <iframe
             title={subject || `email-${id}`}
-            srcDoc={displayHtml}
+            srcDoc={activeHtml}
             sandbox="allow-popups allow-popups-to-escape-sandbox"
             className={`w-full bg-white transition-[height] duration-200 ${expanded ? "h-[36rem]" : "h-[15rem]"}`}
           />
@@ -88,6 +93,14 @@ export function EmailCard({
 
       <div className="mt-3 flex flex-wrap justify-end gap-2">
         <DeleteEmailButton emailId={id} jwt={jwt} />
+        {hasRemoteImages && (
+          <button
+            onClick={() => setShowRemoteImages((value) => !value)}
+            className="inline-flex items-center gap-1 rounded-xl border border-sky-400/20 bg-sky-400/10 px-3 py-1.5 text-xs font-semibold text-sky-200 transition hover:bg-sky-400/20"
+          >
+            {showRemoteImages ? "Sembunyikan remote image" : "Load remote images"}
+          </button>
+        )}
         <button
           onClick={() => setExpanded((value) => !value)}
           className="inline-flex items-center gap-1 rounded-xl border border-white/10 bg-slate-900/70 px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:border-white/20 hover:bg-slate-900"
