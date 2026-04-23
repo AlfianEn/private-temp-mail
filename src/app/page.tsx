@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
+import { DeleteInboxButton } from "@/components/delete-inbox-button";
 import { formatDateTime } from "@/lib/date";
 
 type CreateInboxResponse = {
@@ -195,6 +196,12 @@ export default function Home() {
                             Buka inbox
                           </a>
                         )}
+                        <DeleteInboxButton inboxId={inbox.id} onDeleted={() => {
+                          setRecentInboxes((current) => current.filter((item) => item.id !== inbox.id));
+                          if (data?.inbox.id === inbox.id) {
+                            setData(null);
+                          }
+                        }} />
                       </div>
                     </div>
                   </div>
