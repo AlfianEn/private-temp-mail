@@ -19,7 +19,7 @@ export function RefreshButton() {
       type="button"
       onClick={handleRefresh}
       disabled={isRefreshing}
-      className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/70 px-4 text-sm font-semibold text-slate-100 transition-all duration-200 hover:border-white/20 hover:bg-slate-900 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-slate-900/70 px-4 text-sm font-semibold text-slate-100 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-slate-900 active:scale-95 sm:w-auto disabled:cursor-not-allowed disabled:opacity-60"
     >
       {isRefreshing ? (
         <>

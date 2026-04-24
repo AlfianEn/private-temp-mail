@@ -39,7 +39,7 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
         type="button"
         onClick={() => setShowConfirm(true)}
         disabled={isClearing}
-        className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 text-sm font-semibold text-amber-200 transition-all duration-200 hover:border-amber-400/30 hover:bg-amber-500/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 text-sm font-semibold text-amber-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-amber-400/30 hover:bg-amber-500/20 active:scale-95 sm:w-auto disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isClearing ? (
           <>

@@ -45,7 +45,7 @@ export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonPr
         type="button"
         onClick={() => setShowConfirm(true)}
         disabled={isDeleting}
-        className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-red-400/20 bg-red-500/10 px-3 text-xs font-semibold text-red-200 transition-all duration-200 hover:border-red-400/30 hover:bg-red-500/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-red-400/20 bg-red-500/10 px-3 text-xs font-semibold text-red-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-red-400/30 hover:bg-red-500/20 active:scale-95 sm:w-auto disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isDeleting ? (
           <>
