@@ -167,9 +167,10 @@ export function ConfirmPopover({
       setPosition({ top, left, width });
     };
 
+    let raf2 = 0;
     const raf1 = window.requestAnimationFrame(() => {
       updatePosition();
-      window.requestAnimationFrame(updatePosition);
+      raf2 = window.requestAnimationFrame(updatePosition);
     });
 
     window.addEventListener("resize", updatePosition);
@@ -177,6 +178,7 @@ export function ConfirmPopover({
 
     return () => {
       window.cancelAnimationFrame(raf1);
+      window.cancelAnimationFrame(raf2);
       window.removeEventListener("resize", updatePosition);
       window.removeEventListener("scroll", updatePosition, true);
     };
@@ -227,26 +229,32 @@ export function ConfirmPopover({
       : "border-red-400/20 bg-red-500/10 text-red-200";
 
   return createPortal(
-    <ConfirmCard
-      titleId={titleId}
-      descriptionId={descriptionId}
-      title={title}
-      description={description}
-      confirmLabel={confirmLabel}
-      cancelLabel={cancelLabel}
-      toneClass={toneClass}
-      iconClass={iconClass}
-      isLoading={isLoading}
-      onConfirm={onConfirm}
-      onClose={onClose}
-      containerRef={cardRef}
-      className="fixed z-[70] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95"
-      style={{
-        top: position.top,
-        left: position.left,
-        width: position.width,
-      }}
-    />,
+    <>
+      <div
+        className="fixed inset-0 z-[69] bg-slate-950/14 backdrop-blur-[1px] animate-in fade-in duration-150 ease-out sm:bg-transparent sm:backdrop-blur-0"
+        aria-hidden="true"
+      />
+      <ConfirmCard
+        titleId={titleId}
+        descriptionId={descriptionId}
+        title={title}
+        description={description}
+        confirmLabel={confirmLabel}
+        cancelLabel={cancelLabel}
+        toneClass={toneClass}
+        iconClass={iconClass}
+        isLoading={isLoading}
+        onConfirm={onConfirm}
+        onClose={onClose}
+        containerRef={cardRef}
+        className="fixed z-[70] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-white/10 bg-slate-950/98 p-4 shadow-2xl shadow-black/45 animate-in fade-in zoom-in-95 slide-in-from-top-1 duration-150 ease-out transition-[top,left,width] will-change-transform"
+        style={{
+          top: position.top,
+          left: position.left,
+          width: position.width,
+        }}
+      />
+    </>,
     portalTarget,
   );
 }
