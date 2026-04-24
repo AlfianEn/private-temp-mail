@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyButton } from "@/components/copy-button";
 import { ClearAllInboxesButton } from "@/components/clear-all-inboxes-button";
@@ -30,24 +30,35 @@ export type RecentInbox = {
   inboxUrl: string | null;
 };
 
+type InboxFilter = "all" | "active" | "expiring" | "expired" | "otp";
+type InboxSort = "recent" | "expiresSoon" | "lastEmail";
+
 function getInboxStatus(expiresAt: string | null) {
   const date = parseAppDate(expiresAt);
   if (!date) {
-    return { label: "Tanpa expiry", className: "bg-slate-500/15 text-slate-300" };
+    return {
+      key: "no-expiry" as const,
+      label: "Tanpa expiry",
+      className: "bg-slate-500/15 text-slate-300",
+    };
   }
 
   const diffMs = date.getTime() - Date.now();
   const diffHours = diffMs / (1000 * 60 * 60);
 
   if (diffMs <= 0) {
-    return { label: "Expired", className: "bg-red-500/15 text-red-300" };
+    return { key: "expired" as const, label: "Expired", className: "bg-red-500/15 text-red-300" };
   }
 
   if (diffHours <= 24) {
-    return { label: "Segera expired", className: "bg-amber-500/15 text-amber-300" };
+    return {
+      key: "expiring" as const,
+      label: "Segera expired",
+      className: "bg-amber-500/15 text-amber-300",
+    };
   }
 
-  return { label: "Aktif", className: "bg-emerald-500/15 text-emerald-300" };
+  return { key: "active" as const, label: "Aktif", className: "bg-emerald-500/15 text-emerald-300" };
 }
 
 function cleanFromAddress(raw?: string | null) {
@@ -60,15 +71,67 @@ function cleanFromAddress(raw?: string | null) {
 
 const DEFAULT_INBOXES_PER_PAGE = 10;
 const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
+const PAGE_SIZE_STORAGE_KEY = "ptm-home-page-size";
+
+const FILTER_OPTIONS: Array<{ value: InboxFilter; label: string }> = [
+  { value: "all", label: "Semua" },
+  { value: "active", label: "Aktif" },
+  { value: "expiring", label: "Segera expired" },
+  { value: "expired", label: "Expired" },
+  { value: "otp", label: "Ada OTP" },
+];
+
+const SORT_OPTIONS: Array<{ value: InboxSort; label: string }> = [
+  { value: "recent", label: "Terbaru" },
+  { value: "expiresSoon", label: "Paling dekat expired" },
+  { value: "lastEmail", label: "Email terakhir terbaru" },
+];
+
+function getInitialPageSize() {
+  if (typeof window === "undefined") {
+    return DEFAULT_INBOXES_PER_PAGE;
+  }
+
+  const raw = Number(window.localStorage.getItem(PAGE_SIZE_STORAGE_KEY));
+  return PAGE_SIZE_OPTIONS.includes(raw as (typeof PAGE_SIZE_OPTIONS)[number]) ? raw : DEFAULT_INBOXES_PER_PAGE;
+}
+
+function getTimeValue(value: string | null | undefined) {
+  const date = parseAppDate(value ?? null);
+  return date ? date.getTime() : 0;
+}
+
+function compareExpiry(a: RecentInbox, b: RecentInbox) {
+  const now = Date.now();
+  const aExpiry = parseAppDate(a.expiresAt);
+  const bExpiry = parseAppDate(b.expiresAt);
+
+  const getRank = (date: Date | null) => {
+    if (!date) return 2;
+    return date.getTime() >= now ? 0 : 1;
+  };
+
+  const rankDiff = getRank(aExpiry) - getRank(bExpiry);
+  if (rankDiff !== 0) return rankDiff;
+  if (!aExpiry || !bExpiry) return 0;
+
+  return aExpiry.getTime() - bExpiry.getTime();
+}
 
 export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: RecentInbox[] }) {
   const [data, setData] = useState<CreateInboxResponse | null>(null);
   const [recentInboxes, setRecentInboxes] = useState(initialRecentInboxes);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<InboxFilter>("all");
+  const [sortBy, setSortBy] = useState<InboxSort>("recent");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number>(DEFAULT_INBOXES_PER_PAGE);
+  const [pageSize, setPageSize] = useState<number>(getInitialPageSize);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    window.localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(pageSize));
+  }, [pageSize]);
 
   const loadRecentInboxes = async () => {
     try {
@@ -83,23 +146,50 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
     }
   };
 
-  const filteredInboxes = useMemo(() => {
+  const processedInboxes = useMemo(() => {
     const keyword = search.trim().toLowerCase();
-    if (!keyword) return recentInboxes;
 
-    return recentInboxes.filter((inbox) => {
-      return [inbox.address, inbox.latestEmailSubject, inbox.latestEmailFrom, inbox.latestEmailOtp]
-        .filter(Boolean)
-        .some((value) => String(value).toLowerCase().includes(keyword));
+    const filtered = recentInboxes.filter((inbox) => {
+      const status = getInboxStatus(inbox.expiresAt);
+      const matchesKeyword =
+        !keyword ||
+        [inbox.address, inbox.latestEmailSubject, inbox.latestEmailFrom, inbox.latestEmailOtp]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(keyword));
+
+      const matchesFilter =
+        statusFilter === "all"
+          ? true
+          : statusFilter === "otp"
+            ? Boolean(inbox.latestEmailOtp)
+            : status.key === statusFilter;
+
+      return matchesKeyword && matchesFilter;
     });
-  }, [recentInboxes, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredInboxes.length / pageSize));
+    const sorted = [...filtered];
+
+    sorted.sort((a, b) => {
+      if (sortBy === "expiresSoon") {
+        return compareExpiry(a, b);
+      }
+
+      if (sortBy === "lastEmail") {
+        return getTimeValue(b.lastReceivedAt) - getTimeValue(a.lastReceivedAt) || getTimeValue(b.createdAt) - getTimeValue(a.createdAt);
+      }
+
+      return getTimeValue(b.createdAt) - getTimeValue(a.createdAt);
+    });
+
+    return sorted;
+  }, [recentInboxes, search, statusFilter, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(processedInboxes.length / pageSize));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginatedInboxes = useMemo(() => {
     const start = (safeCurrentPage - 1) * pageSize;
-    return filteredInboxes.slice(start, start + pageSize);
-  }, [filteredInboxes, safeCurrentPage, pageSize]);
+    return processedInboxes.slice(start, start + pageSize);
+  }, [processedInboxes, safeCurrentPage, pageSize]);
 
   const visiblePageNumbers = useMemo(() => {
     const pages = [] as number[];
@@ -113,6 +203,9 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
 
     return pages;
   }, [safeCurrentPage, totalPages]);
+
+  const activeFilterLabel = FILTER_OPTIONS.find((option) => option.value === statusFilter)?.label;
+  const activeSortLabel = SORT_OPTIONS.find((option) => option.value === sortBy)?.label;
 
   const handleGenerate = async () => {
     setIsLoading(true);
@@ -273,7 +366,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
-                    {filteredInboxes.length}/{recentInboxes.length} inbox
+                    {processedInboxes.length}/{recentInboxes.length} inbox
                   </span>
                   <ClearAllInboxesButton
                     onCleared={() => {
@@ -284,7 +377,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                 </div>
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 space-y-3">
                 <div className="relative">
                   <svg className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                   <input
@@ -310,21 +403,82 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                     </button>
                   )}
                 </div>
-                {search.trim() && (
-                  <p className="mt-2 text-xs text-slate-500">
-                    Menampilkan {filteredInboxes.length} hasil untuk <span className="font-semibold text-slate-300">“{search.trim()}”</span>
+
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                  <div className="flex flex-wrap gap-2">
+                    {FILTER_OPTIONS.map((option) => {
+                      const isActive = option.value === statusFilter;
+
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => {
+                            setStatusFilter(option.value);
+                            setCurrentPage(1);
+                          }}
+                          aria-pressed={isActive}
+                          className={`inline-flex h-9 items-center justify-center rounded-xl border px-3 text-xs font-semibold transition-all duration-200 active:scale-95 ${
+                            isActive
+                              ? "border-cyan-400/30 bg-cyan-400/15 text-cyan-200"
+                              : "border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:bg-white/10"
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <label className="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/50 px-3 py-2 text-xs text-slate-500 xl:min-w-[220px]">
+                    <span>Urutkan</span>
+                    <select
+                      value={sortBy}
+                      onChange={(event) => {
+                        setSortBy(event.target.value as InboxSort);
+                        setCurrentPage(1);
+                      }}
+                      className="h-8 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 outline-none transition hover:border-white/20 focus:border-cyan-400/40"
+                    >
+                      {SORT_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value} className="bg-slate-950 text-slate-200">
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                {(search.trim() || statusFilter !== "all" || sortBy !== "recent") && (
+                  <p className="text-xs text-slate-500">
+                    Menampilkan {processedInboxes.length} inbox
+                    {search.trim() && (
+                      <>
+                        {" "}untuk <span className="font-semibold text-slate-300">“{search.trim()}”</span>
+                      </>
+                    )}
+                    {statusFilter !== "all" && (
+                      <>
+                        {" "}dengan filter <span className="font-semibold text-slate-300">{activeFilterLabel}</span>
+                      </>
+                    )}
+                    {sortBy !== "recent" && (
+                      <>
+                        {" "}diurutkan <span className="font-semibold text-slate-300">{activeSortLabel}</span>
+                      </>
+                    )}
                   </p>
                 )}
               </div>
 
               <div className="space-y-3">
-                {filteredInboxes.length === 0 ? (
+                {processedInboxes.length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-white/10 bg-slate-950/40 px-4 py-8 text-center">
                     <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5">
                       <svg className="h-4.5 w-4.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </div>
                     <p className="mt-3 text-sm font-medium text-slate-300">Tidak ada inbox yang cocok.</p>
-                    <p className="mt-1 text-xs text-slate-500">Coba kata kunci lain seperti address, pengirim, subject, atau OTP.</p>
+                    <p className="mt-1 text-xs text-slate-500">Coba kata kunci lain atau ubah filter yang dipakai.</p>
                   </div>
                 ) : (
                   paginatedInboxes.map((inbox) => {
@@ -394,7 +548,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                 )}
               </div>
 
-              {(filteredInboxes.length > DEFAULT_INBOXES_PER_PAGE || pageSize !== DEFAULT_INBOXES_PER_PAGE) && (
+              {(processedInboxes.length > DEFAULT_INBOXES_PER_PAGE || pageSize !== DEFAULT_INBOXES_PER_PAGE) && (
                 <div className="sticky bottom-3 mt-5 flex flex-col gap-3 rounded-2xl border border-white/10 bg-slate-950/90 px-3 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-4">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                     <p className="text-xs text-slate-500">

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
+import { showToast } from "@/components/toast";
 
 type DeleteInboxButtonProps = {
   inboxId: number;
@@ -26,8 +27,9 @@ export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps
       }
 
       onDeleted?.();
+      showToast("Inbox berhasil dihapus");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Gagal menghapus inbox");
+      showToast(error instanceof Error ? error.message : "Gagal menghapus inbox", "error");
       setIsDeleting(false);
     }
   };

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
+import { showToast } from "@/components/toast";
 
 type ClearInboxButtonProps = {
   inboxId: number;
@@ -27,7 +28,7 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
 
       window.location.reload();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Gagal membersihkan inbox");
+      showToast(error instanceof Error ? error.message : "Gagal membersihkan inbox", "error");
       setIsClearing(false);
     }
   };

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
+import { showToast } from "@/components/toast";
 
 type DeleteEmailButtonProps = {
   emailId: number;
@@ -33,7 +34,7 @@ export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonPr
 
       window.location.reload();
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Gagal menghapus email");
+      showToast(error instanceof Error ? error.message : "Gagal menghapus email", "error");
       setIsDeleting(false);
     }
   };

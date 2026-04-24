@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
+import { showToast } from "@/components/toast";
 
 type ClearAllInboxesButtonProps = {
   onCleared?: () => void;
@@ -23,8 +24,9 @@ export function ClearAllInboxesButton({ onCleared }: ClearAllInboxesButtonProps)
       }
 
       onCleared?.();
+      showToast("Semua inbox berhasil dihapus");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Gagal menghapus semua inbox");
+      showToast(error instanceof Error ? error.message : "Gagal menghapus semua inbox", "error");
       setIsClearing(false);
     }
   };
