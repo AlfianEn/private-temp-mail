@@ -29,6 +29,7 @@ type ConfirmCardProps = {
   onClose: () => void;
   className: string;
   styleTop?: number | null;
+  containerRef?: RefObject<HTMLDivElement | null>;
 };
 
 function ConfirmCard({
@@ -45,9 +46,11 @@ function ConfirmCard({
   onClose,
   className,
   styleTop,
+  containerRef,
 }: ConfirmCardProps) {
   return (
     <div
+      ref={containerRef}
       className={className}
       style={styleTop == null ? undefined : { top: styleTop }}
       role="dialog"
@@ -112,7 +115,10 @@ export function ConfirmPopover({
     if (!open) return;
 
     const updateMobilePosition = () => {
-      if (window.innerWidth >= 640) return;
+      if (window.innerWidth >= 640) {
+        setMobileTop(null);
+        return;
+      }
 
       const anchor = anchorRef?.current;
       const card = mobileCardRef.current;
@@ -123,19 +129,25 @@ export function ConfirmPopover({
 
       const margin = 16;
       const gap = 10;
+      const viewportHeight = window.innerHeight;
       const anchorRect = anchor.getBoundingClientRect();
-      const cardHeight = card.offsetHeight;
-      const belowTop = anchorRect.bottom + gap;
-      const aboveTop = anchorRect.top - cardHeight - gap;
-      const maxTop = window.innerHeight - cardHeight - margin;
-      const minTop = margin;
+      const cardHeight = Math.ceil(card.getBoundingClientRect().height);
 
-      let nextTop = belowTop;
-      if (belowTop > maxTop && aboveTop >= minTop) {
-        nextTop = aboveTop;
+      if (!cardHeight) {
+        setMobileTop(null);
+        return;
       }
 
-      nextTop = Math.min(Math.max(nextTop, minTop), Math.max(minTop, maxTop));
+      const spaceBelow = viewportHeight - anchorRect.bottom - margin;
+      const spaceAbove = anchorRect.top - margin;
+      const placeBelow = spaceBelow >= cardHeight + gap || spaceBelow >= spaceAbove;
+
+      let nextTop = placeBelow
+        ? anchorRect.bottom + gap
+        : anchorRect.top - cardHeight - gap;
+
+      const maxTop = Math.max(margin, viewportHeight - cardHeight - margin);
+      nextTop = Math.min(Math.max(nextTop, margin), maxTop);
       setMobileTop(nextTop);
     };
 
@@ -157,7 +169,10 @@ export function ConfirmPopover({
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const rafId = window.requestAnimationFrame(updateMobilePosition);
+    const rafId = window.requestAnimationFrame(() => {
+      updateMobilePosition();
+      window.requestAnimationFrame(updateMobilePosition);
+    });
 
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("mousedown", handlePointerDown);
@@ -198,8 +213,7 @@ export function ConfirmPopover({
         role="presentation"
       />
 
-      <div ref={mobileCardRef} className="sm:hidden">
-        <ConfirmCard
+      <ConfirmCard
           titleId={titleId}
           descriptionId={descriptionId}
           title={title}
@@ -211,10 +225,10 @@ export function ConfirmPopover({
           isLoading={isLoading}
           onConfirm={onConfirm}
           onClose={onClose}
-          className="fixed left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95"
-          styleTop={mobileTop}
+          className="fixed left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:hidden"
+          styleTop={mobileTop ?? 16}
+          containerRef={mobileCardRef}
         />
-      </div>
 
       <div ref={desktopRef} className="hidden sm:block">
         <ConfirmCard
