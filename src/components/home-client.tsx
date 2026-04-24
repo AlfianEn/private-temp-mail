@@ -58,13 +58,15 @@ function cleanFromAddress(raw?: string | null) {
   return raw;
 }
 
-const INBOXES_PER_PAGE = 10;
+const DEFAULT_INBOXES_PER_PAGE = 10;
+const PAGE_SIZE_OPTIONS = [10, 25, 50] as const;
 
 export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: RecentInbox[] }) {
   const [data, setData] = useState<CreateInboxResponse | null>(null);
   const [recentInboxes, setRecentInboxes] = useState(initialRecentInboxes);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_INBOXES_PER_PAGE);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -92,12 +94,12 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
     });
   }, [recentInboxes, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredInboxes.length / INBOXES_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(filteredInboxes.length / pageSize));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const paginatedInboxes = useMemo(() => {
-    const start = (safeCurrentPage - 1) * INBOXES_PER_PAGE;
-    return filteredInboxes.slice(start, start + INBOXES_PER_PAGE);
-  }, [filteredInboxes, safeCurrentPage]);
+    const start = (safeCurrentPage - 1) * pageSize;
+    return filteredInboxes.slice(start, start + pageSize);
+  }, [filteredInboxes, safeCurrentPage, pageSize]);
 
   const visiblePageNumbers = useMemo(() => {
     const pages = [] as number[];
@@ -392,17 +394,37 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                 )}
               </div>
 
-              {filteredInboxes.length > INBOXES_PER_PAGE && (
-                <div className="mt-5 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs text-slate-500">
-                    Halaman <span className="font-semibold text-slate-300">{safeCurrentPage}</span> dari <span className="font-semibold text-slate-300">{totalPages}</span>
-                  </p>
+              {(filteredInboxes.length > DEFAULT_INBOXES_PER_PAGE || pageSize !== DEFAULT_INBOXES_PER_PAGE) && (
+                <div className="sticky bottom-3 mt-5 flex flex-col gap-3 rounded-2xl border border-white/10 bg-slate-950/90 px-3 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between sm:px-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                    <p className="text-xs text-slate-500">
+                      Halaman <span className="font-semibold text-slate-300">{safeCurrentPage}</span> dari <span className="font-semibold text-slate-300">{totalPages}</span>
+                    </p>
+                    <label className="flex items-center gap-2 text-xs text-slate-500">
+                      <span>Per page</span>
+                      <select
+                        value={pageSize}
+                        onChange={(event) => {
+                          setPageSize(Number(event.target.value));
+                          setCurrentPage(1);
+                        }}
+                        className="h-9 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 outline-none transition hover:border-white/20 focus:border-cyan-400/40"
+                      >
+                        {PAGE_SIZE_OPTIONS.map((option) => (
+                          <option key={option} value={option} className="bg-slate-950 text-slate-200">
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+
                   <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                     <button
                       type="button"
                       onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                       disabled={safeCurrentPage === 1}
-                      className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex h-9 min-w-[2.75rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Prev
                     </button>
@@ -412,7 +434,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                         <button
                           type="button"
                           onClick={() => setCurrentPage(1)}
-                          className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95"
+                          className="inline-flex h-9 min-w-[2.75rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95"
                         >
                           1
                         </button>
@@ -429,7 +451,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                           type="button"
                           onClick={() => setCurrentPage(pageNumber)}
                           aria-current={isActive ? "page" : undefined}
-                          className={`inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border px-3 text-xs font-semibold shadow-sm shadow-black/10 transition-all duration-200 active:scale-95 ${
+                          className={`inline-flex h-9 min-w-[2.75rem] items-center justify-center rounded-xl border px-3 text-xs font-semibold shadow-sm shadow-black/10 transition-all duration-200 active:scale-95 ${
                             isActive
                               ? "border-cyan-400/30 bg-cyan-400/15 text-cyan-200"
                               : "border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10"
@@ -446,7 +468,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                         <button
                           type="button"
                           onClick={() => setCurrentPage(totalPages)}
-                          className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95"
+                          className="inline-flex h-9 min-w-[2.75rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95"
                         >
                           {totalPages}
                         </button>
@@ -457,7 +479,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                       type="button"
                       onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                       disabled={safeCurrentPage === totalPages}
-                      className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex h-9 min-w-[2.75rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       Next
                     </button>
