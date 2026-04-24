@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
 
 type ClearAllInboxesButtonProps = {
@@ -8,6 +8,7 @@ type ClearAllInboxesButtonProps = {
 };
 
 export function ClearAllInboxesButton({ onCleared }: ClearAllInboxesButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isClearing, setIsClearing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -31,6 +32,7 @@ export function ClearAllInboxesButton({ onCleared }: ClearAllInboxesButtonProps)
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setShowConfirm(true)}
         disabled={isClearing}
@@ -53,6 +55,7 @@ export function ClearAllInboxesButton({ onCleared }: ClearAllInboxesButtonProps)
         title="Hapus semua inbox tersimpan?"
         description="Semua inbox, email, token, dan asset tersimpan akan dihapus permanen."
         confirmLabel="Hapus semua"
+        anchorRef={buttonRef}
         onClose={() => setShowConfirm(false)}
         onConfirm={handleClear}
         isLoading={isClearing}

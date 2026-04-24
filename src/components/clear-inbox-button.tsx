@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
 
 type ClearInboxButtonProps = {
@@ -9,6 +9,7 @@ type ClearInboxButtonProps = {
 };
 
 export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isClearing, setIsClearing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -34,6 +35,7 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setShowConfirm(true)}
         disabled={isClearing}
@@ -57,6 +59,7 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
         description="Semua email akan dihapus, tapi inbox-nya tetap ada."
         confirmLabel="Kosongkan"
         tone="warning"
+        anchorRef={buttonRef}
         onClose={() => setShowConfirm(false)}
         onConfirm={handleClear}
         isLoading={isClearing}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
 
 type DeleteInboxButtonProps = {
@@ -9,6 +9,7 @@ type DeleteInboxButtonProps = {
 };
 
 export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -34,6 +35,7 @@ export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setShowConfirm(true)}
         disabled={isDeleting}
@@ -56,6 +58,7 @@ export function DeleteInboxButton({ inboxId, onDeleted }: DeleteInboxButtonProps
         title="Hapus inbox tersimpan ini?"
         description="Inbox, email, token, dan asset terkait akan dihapus permanen."
         confirmLabel="Hapus inbox"
+        anchorRef={buttonRef}
         onClose={() => setShowConfirm(false)}
         onConfirm={handleDelete}
         isLoading={isDeleting}

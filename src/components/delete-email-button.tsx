@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ConfirmPopover } from "@/components/confirm-popover";
 
 type DeleteEmailButtonProps = {
@@ -15,6 +15,7 @@ function shortenSubject(subject?: string) {
 }
 
 export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -40,6 +41,7 @@ export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonPr
   return (
     <div className="relative">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setShowConfirm(true)}
         disabled={isDeleting}
@@ -62,6 +64,7 @@ export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonPr
         title="Hapus email ini?"
         description={`Subject: ${shortenSubject(subject)}\n\nEmail akan dihapus permanen dari inbox ini.`}
         confirmLabel="Hapus email"
+        anchorRef={buttonRef}
         onClose={() => setShowConfirm(false)}
         onConfirm={handleDelete}
         isLoading={isDeleting}
