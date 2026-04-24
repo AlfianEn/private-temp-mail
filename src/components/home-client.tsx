@@ -99,6 +99,19 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
     return filteredInboxes.slice(start, start + INBOXES_PER_PAGE);
   }, [filteredInboxes, safeCurrentPage]);
 
+  const visiblePageNumbers = useMemo(() => {
+    const pages = [] as number[];
+    const start = Math.max(1, safeCurrentPage - 2);
+    const end = Math.min(totalPages, start + 4);
+    const normalizedStart = Math.max(1, end - 4);
+
+    for (let page = normalizedStart; page <= end; page += 1) {
+      pages.push(page);
+    }
+
+    return pages;
+  }, [safeCurrentPage, totalPages]);
+
   const handleGenerate = async () => {
     setIsLoading(true);
     setError("");
@@ -284,7 +297,10 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                   {search && (
                     <button
                       type="button"
-                      onClick={() => setSearch("")}
+                      onClick={() => {
+                        setSearch("");
+                        setCurrentPage(1);
+                      }}
                       className="absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:border-white/20 hover:bg-white/10"
                       aria-label="Reset pencarian"
                     >
@@ -381,38 +397,69 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                   <p className="text-xs text-slate-500">
                     Halaman <span className="font-semibold text-slate-300">{safeCurrentPage}</span> dari <span className="font-semibold text-slate-300">{totalPages}</span>
                   </p>
-                  <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setCurrentPage(1)}
-                      disabled={safeCurrentPage === 1}
-                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Awal
-                    </button>
+                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                     <button
                       type="button"
                       onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                       disabled={safeCurrentPage === 1}
-                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Sebelumnya
+                      Prev
                     </button>
+
+                    {visiblePageNumbers[0] > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setCurrentPage(1)}
+                          className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95"
+                        >
+                          1
+                        </button>
+                        {visiblePageNumbers[0] > 2 && <span className="px-1 text-xs text-slate-500">...</span>}
+                      </>
+                    )}
+
+                    {visiblePageNumbers.map((pageNumber) => {
+                      const isActive = pageNumber === safeCurrentPage;
+
+                      return (
+                        <button
+                          key={pageNumber}
+                          type="button"
+                          onClick={() => setCurrentPage(pageNumber)}
+                          aria-current={isActive ? "page" : undefined}
+                          className={`inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border px-3 text-xs font-semibold shadow-sm shadow-black/10 transition-all duration-200 active:scale-95 ${
+                            isActive
+                              ? "border-cyan-400/30 bg-cyan-400/15 text-cyan-200"
+                              : "border-white/10 bg-white/5 text-slate-200 hover:border-white/20 hover:bg-white/10"
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      );
+                    })}
+
+                    {visiblePageNumbers.at(-1)! < totalPages && (
+                      <>
+                        {visiblePageNumbers.at(-1)! < totalPages - 1 && <span className="px-1 text-xs text-slate-500">...</span>}
+                        <button
+                          type="button"
+                          onClick={() => setCurrentPage(totalPages)}
+                          className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95"
+                        >
+                          {totalPages}
+                        </button>
+                      </>
+                    )}
+
                     <button
                       type="button"
                       onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                       disabled={safeCurrentPage === totalPages}
-                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex h-9 min-w-[2.5rem] items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      Berikutnya
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCurrentPage(totalPages)}
-                      disabled={safeCurrentPage === totalPages}
-                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      Akhir
+                      Next
                     </button>
                   </div>
                 </div>
