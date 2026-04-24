@@ -1,6 +1,15 @@
 "use client";
 
-import { type CSSProperties, type RefObject, useEffect, useId, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  type RefObject,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
 type ConfirmPopoverProps = {
   open: boolean;
@@ -27,9 +36,16 @@ type ConfirmCardProps = {
   isLoading: boolean;
   onConfirm: () => void;
   onClose: () => void;
-  className: string;
   containerRef?: RefObject<HTMLDivElement | null>;
+  className: string;
   style?: CSSProperties;
+};
+
+type PopoverPosition = {
+  top: number;
+  left?: number;
+  right?: number;
+  width: number;
 };
 
 function ConfirmCard({
@@ -44,8 +60,8 @@ function ConfirmCard({
   isLoading,
   onConfirm,
   onClose,
-  className,
   containerRef,
+  className,
   style,
 }: ConfirmCardProps) {
   return (
@@ -105,36 +121,69 @@ export function ConfirmPopover({
   onConfirm,
   onClose,
 }: ConfirmPopoverProps) {
-  const mobileRef = useRef<HTMLDivElement | null>(null);
-  const desktopRef = useRef<HTMLDivElement | null>(null);
-  const [mobileTop, setMobileTop] = useState(16);
+  const cardRef = useRef<HTMLDivElement | null>(null);
   const titleId = useId();
   const descriptionId = useId();
+  const [position, setPosition] = useState<PopoverPosition>({ top: 16, width: 320, left: 16 });
+  const portalTarget = typeof document !== "undefined" ? document.body : null;
 
-  useEffect(() => {
-    if (!open) return;
+  useLayoutEffect(() => {
+    if (!open || !portalTarget) return;
 
-    const updateMobilePosition = () => {
-      if (window.innerWidth >= 640) return;
-
+    const updatePosition = () => {
       const anchor = anchorRef?.current;
-      const card = mobileRef.current;
-      if (!anchor || !card) {
-        setMobileTop(16);
-        return;
-      }
+      const card = cardRef.current;
+      if (!anchor || !card) return;
 
+      const isMobile = window.innerWidth < 640;
       const margin = 16;
       const gap = 10;
       const anchorRect = anchor.getBoundingClientRect();
-      const cardHeight = Math.ceil(card.getBoundingClientRect().height);
-      const nextTop = Math.min(
+      const cardRect = card.getBoundingClientRect();
+      const cardHeight = Math.ceil(cardRect.height) || 220;
+      const mobileWidth = Math.min(320, window.innerWidth - margin * 2);
+      const desktopWidth = 320;
+      const width = isMobile ? mobileWidth : desktopWidth;
+
+      const top = Math.min(
         Math.max(anchorRect.bottom + gap, margin),
         Math.max(margin, window.innerHeight - cardHeight - margin),
       );
 
-      setMobileTop(nextTop);
+      if (isMobile) {
+        setPosition({
+          top,
+          left: window.innerWidth / 2 - width / 2,
+          width,
+        });
+        return;
+      }
+
+      const left = Math.min(
+        Math.max(anchorRect.right - width, margin),
+        Math.max(margin, window.innerWidth - width - margin),
+      );
+
+      setPosition({ top, left, width });
     };
+
+    const raf1 = window.requestAnimationFrame(() => {
+      updatePosition();
+      window.requestAnimationFrame(updatePosition);
+    });
+
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.cancelAnimationFrame(raf1);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open, portalTarget, anchorRef]);
+
+  useEffect(() => {
+    if (!open) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isLoading) {
@@ -147,33 +196,25 @@ export function ConfirmPopover({
       if (!(target instanceof Node) || isLoading) return;
 
       const clickedAnchor = anchorRef?.current?.contains(target);
-      const clickedMobile = mobileRef.current?.contains(target);
-      const clickedDesktop = desktopRef.current?.contains(target);
+      const clickedCard = cardRef.current?.contains(target);
 
-      if (!clickedAnchor && !clickedMobile && !clickedDesktop) {
+      if (!clickedAnchor && !clickedCard) {
         onClose();
       }
     };
 
-    const rafId = window.requestAnimationFrame(updateMobilePosition);
-
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("mousedown", handlePointerDown);
     document.addEventListener("touchstart", handlePointerDown);
-    window.addEventListener("resize", updateMobilePosition);
-    window.addEventListener("scroll", updateMobilePosition, true);
 
     return () => {
-      window.cancelAnimationFrame(rafId);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("touchstart", handlePointerDown);
-      window.removeEventListener("resize", updateMobilePosition);
-      window.removeEventListener("scroll", updateMobilePosition, true);
     };
   }, [open, isLoading, onClose, anchorRef]);
 
-  if (!open) return null;
+  if (!open || !portalTarget) return null;
 
   const toneClass =
     tone === "warning"
@@ -185,40 +226,27 @@ export function ConfirmPopover({
       ? "border-amber-400/20 bg-amber-500/10 text-amber-200"
       : "border-red-400/20 bg-red-500/10 text-red-200";
 
-  return (
-    <>
-      <ConfirmCard
-        titleId={titleId}
-        descriptionId={descriptionId}
-        title={title}
-        description={description}
-        confirmLabel={confirmLabel}
-        cancelLabel={cancelLabel}
-        toneClass={toneClass}
-        iconClass={iconClass}
-        isLoading={isLoading}
-        onConfirm={onConfirm}
-        onClose={onClose}
-        containerRef={mobileRef}
-        className="fixed left-1/2 z-50 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:hidden"
-        style={{ top: mobileTop }}
-      />
-
-      <ConfirmCard
-        titleId={titleId}
-        descriptionId={descriptionId}
-        title={title}
-        description={description}
-        confirmLabel={confirmLabel}
-        cancelLabel={cancelLabel}
-        toneClass={toneClass}
-        iconClass={iconClass}
-        isLoading={isLoading}
-        onConfirm={onConfirm}
-        onClose={onClose}
-        containerRef={desktopRef}
-        className="absolute right-0 top-full z-30 mt-2 hidden w-[20rem] origin-top-right overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:block"
-      />
-    </>
+  return createPortal(
+    <ConfirmCard
+      titleId={titleId}
+      descriptionId={descriptionId}
+      title={title}
+      description={description}
+      confirmLabel={confirmLabel}
+      cancelLabel={cancelLabel}
+      toneClass={toneClass}
+      iconClass={iconClass}
+      isLoading={isLoading}
+      onConfirm={onConfirm}
+      onClose={onClose}
+      containerRef={cardRef}
+      className="fixed z-[70] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95"
+      style={{
+        top: position.top,
+        left: position.left,
+        width: position.width,
+      }}
+    />,
+    portalTarget,
   );
 }
