@@ -10,8 +10,7 @@ export async function GET() {
     const inboxes = await db
       .select()
       .from(schema.inboxes)
-      .orderBy(desc(schema.inboxes.createdAt))
-      .limit(12);
+      .orderBy(desc(schema.inboxes.createdAt));
 
     const result = [] as Array<{
       id: number;

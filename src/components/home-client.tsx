@@ -58,10 +58,13 @@ function cleanFromAddress(raw?: string | null) {
   return raw;
 }
 
+const INBOXES_PER_PAGE = 10;
+
 export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: RecentInbox[] }) {
   const [data, setData] = useState<CreateInboxResponse | null>(null);
   const [recentInboxes, setRecentInboxes] = useState(initialRecentInboxes);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -71,6 +74,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
       const json = (await res.json()) as { inboxes?: RecentInbox[] };
       if (res.ok && Array.isArray(json.inboxes)) {
         setRecentInboxes(json.inboxes);
+        setCurrentPage(1);
       }
     } catch {
       // ignore recent inbox load errors
@@ -88,6 +92,13 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
     });
   }, [recentInboxes, search]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredInboxes.length / INBOXES_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedInboxes = useMemo(() => {
+    const start = (safeCurrentPage - 1) * INBOXES_PER_PAGE;
+    return filteredInboxes.slice(start, start + INBOXES_PER_PAGE);
+  }, [filteredInboxes, safeCurrentPage]);
+
   const handleGenerate = async () => {
     setIsLoading(true);
     setError("");
@@ -101,6 +112,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
       }
 
       setData(json);
+      setCurrentPage(1);
       await loadRecentInboxes();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
@@ -262,7 +274,10 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                   <svg className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                   <input
                     value={search}
-                    onChange={(event) => setSearch(event.target.value)}
+                    onChange={(event) => {
+                      setSearch(event.target.value);
+                      setCurrentPage(1);
+                    }}
                     placeholder="Cari address, subject, sender, atau OTP"
                     className="w-full rounded-2xl border border-white/10 bg-slate-950/70 py-3 pl-11 pr-12 text-sm text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-400/40"
                   />
@@ -294,7 +309,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                     <p className="mt-1 text-xs text-slate-500">Coba kata kunci lain seperti address, pengirim, subject, atau OTP.</p>
                   </div>
                 ) : (
-                  filteredInboxes.map((inbox) => {
+                  paginatedInboxes.map((inbox) => {
                     const status = getInboxStatus(inbox.expiresAt);
 
                     return (
@@ -360,6 +375,48 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                   })
                 )}
               </div>
+
+              {filteredInboxes.length > INBOXES_PER_PAGE && (
+                <div className="mt-5 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs text-slate-500">
+                    Halaman <span className="font-semibold text-slate-300">{safeCurrentPage}</span> dari <span className="font-semibold text-slate-300">{totalPages}</span>
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(1)}
+                      disabled={safeCurrentPage === 1}
+                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Awal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                      disabled={safeCurrentPage === 1}
+                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Sebelumnya
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                      disabled={safeCurrentPage === totalPages}
+                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Berikutnya
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={safeCurrentPage === totalPages}
+                      className="inline-flex h-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 shadow-sm shadow-black/10 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Akhir
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
