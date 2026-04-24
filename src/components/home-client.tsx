@@ -127,24 +127,46 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(getInitialPageSize);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshingRecent, setIsRefreshingRecent] = useState(false);
+  const [lastRecentSyncAt, setLastRecentSyncAt] = useState(() => new Date().toISOString());
   const [error, setError] = useState("");
 
   useEffect(() => {
     window.localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(pageSize));
   }, [pageSize]);
 
-  const loadRecentInboxes = async () => {
+  const loadRecentInboxes = async ({ resetPage = false, silent = false }: { resetPage?: boolean; silent?: boolean } = {}) => {
+    if (!silent) {
+      setIsRefreshingRecent(true);
+    }
+
     try {
       const res = await fetch("/api/inboxes/recent", { cache: "no-store" });
       const json = (await res.json()) as { inboxes?: RecentInbox[] };
       if (res.ok && Array.isArray(json.inboxes)) {
         setRecentInboxes(json.inboxes);
-        setCurrentPage(1);
+        setLastRecentSyncAt(new Date().toISOString());
+        if (resetPage) {
+          setCurrentPage(1);
+        }
       }
     } catch {
       // ignore recent inbox load errors
+    } finally {
+      if (!silent) {
+        setIsRefreshingRecent(false);
+      }
     }
   };
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      if (document.visibilityState !== "visible") return;
+      void loadRecentInboxes({ silent: true });
+    }, 15000);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   const processedInboxes = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -221,7 +243,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
 
       setData(json);
       setCurrentPage(1);
-      await loadRecentInboxes();
+      await loadRecentInboxes({ resetPage: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan");
     } finally {
@@ -362,16 +384,38 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
               <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-base font-semibold tracking-[-0.01em] text-slate-100">Inbox tersimpan</h3>
-                  <p className="mt-1 text-sm text-slate-400">Daftar inbox terbaru yang masih punya link aktif.</p>
+                  <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-slate-400">
+                    <span>Daftar inbox terbaru yang masih punya link aktif.</span>
+                    <span className="text-xs text-slate-500">Sinkron {formatRelativeTime(lastRecentSyncAt)}</span>
+                  </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-semibold text-slate-300">
                     {processedInboxes.length}/{recentInboxes.length} inbox
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => void loadRecentInboxes()}
+                    disabled={isRefreshingRecent}
+                    className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-semibold text-slate-200 transition-all duration-200 hover:border-white/20 hover:bg-white/10 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isRefreshingRecent ? (
+                      <>
+                        <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                        Sync...
+                      </>
+                    ) : (
+                      <>
+                        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15.55-6.36L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15.55 6.36L3 16"/></svg>
+                        Sync
+                      </>
+                    )}
+                  </button>
                   <ClearAllInboxesButton
                     onCleared={() => {
                       setRecentInboxes([]);
                       setData(null);
+                      void loadRecentInboxes({ silent: true });
                     }}
                   />
                 </div>
@@ -538,6 +582,7 @@ export function HomeClient({ initialRecentInboxes }: { initialRecentInboxes: Rec
                                 if (data?.inbox.id === inbox.id) {
                                   setData(null);
                                 }
+                                void loadRecentInboxes({ silent: true });
                               }}
                             />
                           </div>
