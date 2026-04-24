@@ -1,6 +1,6 @@
 "use client";
 
-import { type RefObject, useEffect, useId, useRef, useState } from "react";
+import { type CSSProperties, type RefObject, useEffect, useId, useRef, useState } from "react";
 
 type ConfirmPopoverProps = {
   open: boolean;
@@ -28,8 +28,8 @@ type ConfirmCardProps = {
   onConfirm: () => void;
   onClose: () => void;
   className: string;
-  styleTop?: number | null;
   containerRef?: RefObject<HTMLDivElement | null>;
+  style?: CSSProperties;
 };
 
 function ConfirmCard({
@@ -45,14 +45,14 @@ function ConfirmCard({
   onConfirm,
   onClose,
   className,
-  styleTop,
   containerRef,
+  style,
 }: ConfirmCardProps) {
   return (
     <div
       ref={containerRef}
       className={className}
-      style={styleTop == null ? undefined : { top: styleTop }}
+      style={style}
       role="dialog"
       aria-modal="false"
       aria-labelledby={titleId}
@@ -105,9 +105,9 @@ export function ConfirmPopover({
   onConfirm,
   onClose,
 }: ConfirmPopoverProps) {
+  const mobileRef = useRef<HTMLDivElement | null>(null);
   const desktopRef = useRef<HTMLDivElement | null>(null);
-  const mobileCardRef = useRef<HTMLDivElement | null>(null);
-  const [mobileTop, setMobileTop] = useState<number | null>(null);
+  const [mobileTop, setMobileTop] = useState(16);
   const titleId = useId();
   const descriptionId = useId();
 
@@ -115,39 +115,24 @@ export function ConfirmPopover({
     if (!open) return;
 
     const updateMobilePosition = () => {
-      if (window.innerWidth >= 640) {
-        setMobileTop(null);
-        return;
-      }
+      if (window.innerWidth >= 640) return;
 
       const anchor = anchorRef?.current;
-      const card = mobileCardRef.current;
+      const card = mobileRef.current;
       if (!anchor || !card) {
-        setMobileTop(null);
+        setMobileTop(16);
         return;
       }
 
       const margin = 16;
       const gap = 10;
-      const viewportHeight = window.innerHeight;
       const anchorRect = anchor.getBoundingClientRect();
       const cardHeight = Math.ceil(card.getBoundingClientRect().height);
+      const nextTop = Math.min(
+        Math.max(anchorRect.bottom + gap, margin),
+        Math.max(margin, window.innerHeight - cardHeight - margin),
+      );
 
-      if (!cardHeight) {
-        setMobileTop(null);
-        return;
-      }
-
-      const spaceBelow = viewportHeight - anchorRect.bottom - margin;
-      const spaceAbove = anchorRect.top - margin;
-      const placeBelow = spaceBelow >= cardHeight + gap || spaceBelow >= spaceAbove;
-
-      let nextTop = placeBelow
-        ? anchorRect.bottom + gap
-        : anchorRect.top - cardHeight - gap;
-
-      const maxTop = Math.max(margin, viewportHeight - cardHeight - margin);
-      nextTop = Math.min(Math.max(nextTop, margin), maxTop);
       setMobileTop(nextTop);
     };
 
@@ -158,21 +143,19 @@ export function ConfirmPopover({
     };
 
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {
-      if (window.innerWidth < 640) return;
-      if (!desktopRef.current) return;
       const target = event.target;
-      if (target instanceof Node && !desktopRef.current.contains(target) && !isLoading) {
+      if (!(target instanceof Node) || isLoading) return;
+
+      const clickedAnchor = anchorRef?.current?.contains(target);
+      const clickedMobile = mobileRef.current?.contains(target);
+      const clickedDesktop = desktopRef.current?.contains(target);
+
+      if (!clickedAnchor && !clickedMobile && !clickedDesktop) {
         onClose();
       }
     };
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const rafId = window.requestAnimationFrame(() => {
-      updateMobilePosition();
-      window.requestAnimationFrame(updateMobilePosition);
-    });
+    const rafId = window.requestAnimationFrame(updateMobilePosition);
 
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("mousedown", handlePointerDown);
@@ -181,7 +164,6 @@ export function ConfirmPopover({
     window.addEventListener("scroll", updateMobilePosition, true);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.cancelAnimationFrame(rafId);
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("mousedown", handlePointerDown);
@@ -205,47 +187,38 @@ export function ConfirmPopover({
 
   return (
     <>
-      <div
-        className="fixed inset-0 z-40 bg-slate-950/75 backdrop-blur-[2px] sm:hidden"
-        onClick={() => {
-          if (!isLoading) onClose();
-        }}
-        role="presentation"
+      <ConfirmCard
+        titleId={titleId}
+        descriptionId={descriptionId}
+        title={title}
+        description={description}
+        confirmLabel={confirmLabel}
+        cancelLabel={cancelLabel}
+        toneClass={toneClass}
+        iconClass={iconClass}
+        isLoading={isLoading}
+        onConfirm={onConfirm}
+        onClose={onClose}
+        containerRef={mobileRef}
+        className="fixed left-1/2 z-50 w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:hidden"
+        style={{ top: mobileTop }}
       />
 
       <ConfirmCard
-          titleId={titleId}
-          descriptionId={descriptionId}
-          title={title}
-          description={description}
-          confirmLabel={confirmLabel}
-          cancelLabel={cancelLabel}
-          toneClass={toneClass}
-          iconClass={iconClass}
-          isLoading={isLoading}
-          onConfirm={onConfirm}
-          onClose={onClose}
-          className="fixed left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[min(20rem,calc(100vw-2rem))] -translate-x-1/2 overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:hidden"
-          styleTop={mobileTop ?? 16}
-          containerRef={mobileCardRef}
-        />
-
-      <div ref={desktopRef} className="hidden sm:block">
-        <ConfirmCard
-          titleId={titleId}
-          descriptionId={descriptionId}
-          title={title}
-          description={description}
-          confirmLabel={confirmLabel}
-          cancelLabel={cancelLabel}
-          toneClass={toneClass}
-          iconClass={iconClass}
-          isLoading={isLoading}
-          onConfirm={onConfirm}
-          onClose={onClose}
-          className="absolute right-0 top-full z-30 mt-2 w-[20rem] origin-top-right rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95"
-        />
-      </div>
+        titleId={titleId}
+        descriptionId={descriptionId}
+        title={title}
+        description={description}
+        confirmLabel={confirmLabel}
+        cancelLabel={cancelLabel}
+        toneClass={toneClass}
+        iconClass={iconClass}
+        isLoading={isLoading}
+        onConfirm={onConfirm}
+        onClose={onClose}
+        containerRef={desktopRef}
+        className="absolute right-0 top-full z-30 mt-2 hidden w-[20rem] origin-top-right overflow-y-auto rounded-2xl border border-white/10 bg-slate-950 p-4 shadow-2xl shadow-black/40 animate-in fade-in zoom-in-95 sm:block"
+      />
     </>
   );
 }
