@@ -8,6 +8,7 @@ type DeleteEmailButtonProps = {
   emailId: number;
   jwt: string;
   subject?: string;
+  onDeleted?: () => void;
 };
 
 function shortenSubject(subject?: string) {
@@ -15,7 +16,7 @@ function shortenSubject(subject?: string) {
   return subject.length > 72 ? `${subject.slice(0, 69)}...` : subject;
 }
 
-export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonProps) {
+export function DeleteEmailButton({ emailId, jwt, subject, onDeleted }: DeleteEmailButtonProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -32,7 +33,8 @@ export function DeleteEmailButton({ emailId, jwt, subject }: DeleteEmailButtonPr
         throw new Error(json.error || "Gagal menghapus email");
       }
 
-      window.location.reload();
+      onDeleted?.();
+      showToast("Email berhasil dihapus");
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Gagal menghapus email", "error");
       setIsDeleting(false);

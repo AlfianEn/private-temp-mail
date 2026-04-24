@@ -7,9 +7,10 @@ import { showToast } from "@/components/toast";
 type ClearInboxButtonProps = {
   inboxId: number;
   jwt: string;
+  onCleared?: () => void;
 };
 
-export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
+export function ClearInboxButton({ inboxId, jwt, onCleared }: ClearInboxButtonProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isClearing, setIsClearing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -26,7 +27,8 @@ export function ClearInboxButton({ inboxId, jwt }: ClearInboxButtonProps) {
         throw new Error(json.error || "Gagal membersihkan inbox");
       }
 
-      window.location.reload();
+      onCleared?.();
+      showToast("Inbox berhasil dikosongkan");
     } catch (error) {
       showToast(error instanceof Error ? error.message : "Gagal membersihkan inbox", "error");
       setIsClearing(false);

@@ -19,6 +19,7 @@ type EmailCardProps = {
   hasLocalCidAssets: boolean;
   hasRemoteImages: boolean;
   isNewest: boolean;
+  onDeleted?: () => void;
 };
 
 export function EmailCard({
@@ -36,6 +37,7 @@ export function EmailCard({
   hasLocalCidAssets,
   hasRemoteImages,
   isNewest,
+  onDeleted,
 }: EmailCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showRemoteImages, setShowRemoteImages] = useState(false);
@@ -49,7 +51,7 @@ export function EmailCard({
           <div className="flex items-start justify-between gap-3">
             <p className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-[-0.01em] text-slate-100 sm:text-base">{subject}</p>
             <div className="shrink-0 sm:hidden">
-              <DeleteEmailButton emailId={id} jwt={jwt} subject={subject} />
+              <DeleteEmailButton emailId={id} jwt={jwt} subject={subject} onDeleted={onDeleted} />
             </div>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -118,7 +120,7 @@ export function EmailCard({
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
         <div className="hidden sm:block">
-          <DeleteEmailButton emailId={id} jwt={jwt} subject={subject} />
+          <DeleteEmailButton emailId={id} jwt={jwt} subject={subject} onDeleted={onDeleted} />
         </div>
         {hasRemoteImages && (
           <button
